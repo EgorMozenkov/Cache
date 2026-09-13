@@ -1,0 +1,128 @@
+#pragma once
+
+#include <list>
+#include <unordered_map>
+#include "I_cache.hpp"
+#include "Logger.hpp"
+
+template <typename Key>
+class TwoQ_Cache : public ICache<Key> {
+
+    using IT = typename std::list<Key>::iterator;
+
+    enum class QueueType {
+        IN,
+        OUT,
+        VIP,
+    };
+
+    struct ItemInfo {
+        QueueType type;
+        IT list_it;
+    };
+
+private:
+
+    std::unordered_map<Key, ItemInfo> TwoQ_map;
+    std::list<Key> IN_list, OUT_list, VIP_list;
+    size_t size_IN, size_OUT, size_VIP;
+    Key capacity;
+
+public:
+    
+    TwoQ_Cache (size_t N) 
+    {
+        if (N <= 3) {
+            throw std::invalid_argument("Ошибка: Размер кэша 2Q должен быть больше 3.");
+        }
+        size_IN = N / 4;
+        size_VIP = N - size_IN;
+        size_OUT = N / 2;
+        capacity = N;
+    }
+
+    bool request(const Key& key) override
+    {
+        if (capacity == 0) return false;
+
+        auto it = TwoQ_map.find(key);
+        
+
+        // Элемента нет ни в одной из очередей
+        if (it == TwoQ_map.end()) {
+            
+            // Проверяем переполнение IN
+            if (IN_list.size() >= size_IN) {
+                Key value_1 = IN_list.back();
+                IN_list.pop_back();
+                
+                // Проверяем переполнение OUT
+                if (OUT_list.size() >= size_OUT) {
+                    Key value_2 = OUT_list.back();
+                    Log::trace(Log::DEBUG, "Вытеснение: Удаляем старейший ключ из OUT: ", value_2, "\n");
+                    OUT_list.pop_back();
+                    TwoQ_map.erase(value_2);
+                }
+                
+                // Переносим элемент из IN в OUT
+                OUT_list.push_front(value_1);
+                TwoQ_map[value_1] = {QueueType::OUT, OUT_list.begin()};
+            }
+            
+            // Добавляем новый ключ в IN
+            IN_list.push_front(key);
+            TwoQ_map[key] = {QueueType::IN, IN_list.begin()};
+            
+            Log::trace(Log::TRACE, "МИСС: Ключ ", key, " добавлен в IN\n");
+            return false;
+        }
+
+        // Ключ найден
+        auto& node = it->second;
+
+        if (node.type == QueueType::VIP) {
+            VIP_list.splice(VIP_list.begin(), VIP_list, node.list_it);
+            Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " в VIP, переносим в начало\n");
+            return true;
+        }
+        else if (node.type == QueueType::IN) {
+            Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " в IN, оставляем на месте\n");
+            return true;
+        }
+        else if (node.type == QueueType::OUT) {
+            
+            // Проверяем переполнение VIP
+            if (VIP_list.size() >= size_VIP) {
+                Key evicted_vip = VIP_list.back();
+                Log::trace(Log::DEBUG, "Вытеснение: VIP переполнен. Удаляем: ", evicted_vip, "\n");
+                TwoQ_map.erase(evicted_vip);
+                VIP_list.pop_back();
+            }
+
+            OUT_list.erase(node.list_it);
+            
+            VIP_list.push_front(key);
+            
+            node.type = QueueType::VIP;
+            node.list_it = VIP_list.begin();
+            
+            Log::trace(Log::TRACE, "МИСС: Ключ ", key, " повышен из OUT в VIP\n");
+            return false;
+        }
+
+        return false;
+    }
+    
+
+    void read_cache() override
+    {
+        Log::trace(Log::INFO, "Начало кэша |  ");
+        for(Key value : VIP_list) {
+            Log::trace(Log::INFO, value, " |  ");
+        }
+        for(Key value : IN_list) {
+            Log::trace(Log::INFO, value, " |  ");
+        }
+        Log::trace(Log::INFO, "Конец кэша |\n");
+    }
+};
