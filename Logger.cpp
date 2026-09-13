@@ -5,7 +5,7 @@
 
 namespace Log 
 {
-    LogLevel log_level = INFO;
+    LogLevel log_level = TRACE;
 
 
     void trace(LogLevel level, const char *format, ...) {

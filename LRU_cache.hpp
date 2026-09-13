@@ -4,12 +4,12 @@
 #include <unordered_map>
 #include "I_cache.hpp"
 
-typedef std::list<int>::iterator IT;
+using IT = std::list<int>::iterator;
 
 class LRU_Cache : public ICache {
 private:
     std::list<int> LRU_list;
-    std::unordered_map<int, std::list<int>::iterator> LRU_map;
+    std::unordered_map<int, IT> LRU_map;
     size_t capacity;
 
 public:

@@ -2,6 +2,7 @@
 
 int main()
 {
-    test_LRU ();
+    //test_LRU ();
+    test_LFU ();
     return 0;
 }

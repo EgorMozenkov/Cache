@@ -11,6 +11,7 @@ void TEST (size_t N, const std::vector<int>& keys)
 {
     CacheType cache(N);
     
+    Log::trace(Log::INFO, "Создан тип кэша размером %d\n", N);
     Log::trace(Log::INFO, "--- Исходное состояние кэша ---\n");
     cache.read_cache();
     Log::trace(Log::DEBUG, "Приходят новые ключи!\n");
@@ -23,3 +24,4 @@ void TEST (size_t N, const std::vector<int>& keys)
 }
 
 void test_LRU ();
+void test_LFU ();
