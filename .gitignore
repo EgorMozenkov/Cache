@@ -2,3 +2,5 @@ cache_test
 *.out
 *.exe
 *.o
+2Q_cache.cpp
+2Q_cache.hpp
