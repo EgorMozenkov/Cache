@@ -5,6 +5,7 @@
 #include "LRU_cache.hpp"
 #include "LFU_cache.hpp"
 #include "2Q_cache.hpp"
+#include "ARC_cache.hpp"
 #include "Test.hpp"
 #include "Logger.hpp"
 
@@ -100,9 +101,39 @@ void test_TwoQ ()
     Log::trace(Log::INFO, "----        Тест 4        ----\n");
     Log::trace(Log::INFO, "Устойчивость к сканированию (Cache Pollution)\n");
     TEST<TwoQ_Cache<int>> (4, std::vector<int>{
-        1, 3, 1,   // 1 уходит в VIP
-        2, 4, 2,   // 2 уходит в VIP
-        5, 6, 7, 8 // Мусорный трафик. VIP не должен пострадать!
+        1, 3, 1,   
+        2, 4, 2,   
+        5, 6, 7, 8 
     });
+    Log::trace(Log::INFO, "\n");
+}
+
+void test_ARC ()
+{
+    Log::trace(Log::INFO, "----   Тест для ARC-кэша   ----\n");
+    
+    Log::trace(Log::INFO, "----        Тест 1        ----\n");
+    Log::trace(Log::INFO, "Базовое добавление и повышение до VIP (Хит в MRU)\n");
+    TEST<ARC_Cache<int>> (5, std::vector<int>{1, 1});
+    Log::trace(Log::INFO, "\n");
+
+    Log::trace(Log::INFO, "----        Тест 2        ----\n");
+    Log::trace(Log::INFO, "Магия ARC: Хит в MRU_ghost (Увеличение квоты p)\n");
+    TEST<ARC_Cache<int>> (5, std::vector<int>{1, 2, 3, 4, 5, 6, 1});
+    Log::trace(Log::INFO, "\n");
+
+    Log::trace(Log::INFO, "----        Тест 3        ----\n");
+    Log::trace(Log::INFO, "Закрепление в VIP-зоне (Выживание при сканировании)\n");
+    TEST<ARC_Cache<int>> (5, std::vector<int>{1, 1, 2, 3, 4, 5, 6, 1});
+    Log::trace(Log::INFO, "\n");
+
+    Log::trace(Log::INFO, "----        Тест 4        ----\n");
+    Log::trace(Log::INFO, "Обратная адаптация: Хит в MFU_ghost (Уменьшение квоты p)\n");
+    TEST<ARC_Cache<int>> (5, std::vector<int>{1, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9, 1});
+    Log::trace(Log::INFO, "\n");
+
+    Log::trace(Log::INFO, "----        Тест 5        ----\n");
+    Log::trace(Log::INFO, "Проверка лимитов истории (Очистка старых призраков)\n");
+    TEST<ARC_Cache<int>> (5, std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
     Log::trace(Log::INFO, "\n");
 }

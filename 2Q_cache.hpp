@@ -26,7 +26,7 @@ private:
     std::unordered_map<Key, ItemInfo> TwoQ_map;
     std::list<Key> IN_list, OUT_list, VIP_list;
     size_t size_IN, size_OUT, size_VIP;
-    Key capacity;
+    size_t capacity;
 
 public:
     
@@ -43,8 +43,6 @@ public:
 
     bool request(const Key& key) override
     {
-        if (capacity == 0) return false;
-
         auto it = TwoQ_map.find(key);
         
 

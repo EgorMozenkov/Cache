@@ -36,3 +36,4 @@ void test_LFU ();
 void string_test_LRU ();
 void string_test_LFU ();
 void test_TwoQ ();
+void test_ARC ();
