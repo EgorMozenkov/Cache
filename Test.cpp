@@ -6,6 +6,7 @@
 #include "LFU_cache.hpp"
 #include "2Q_cache.hpp"
 #include "ARC_cache.hpp"
+#include "LIRS_cache.hpp"
 #include "Test.hpp"
 #include "Logger.hpp"
 
@@ -135,5 +136,35 @@ void test_ARC ()
     Log::trace(Log::INFO, "----        Тест 5        ----\n");
     Log::trace(Log::INFO, "Проверка лимитов истории (Очистка старых призраков)\n");
     TEST<ARC_Cache<int>> (5, std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
+    Log::trace(Log::INFO, "\n");
+}
+
+void test_LIRS ()
+{
+    Log::trace(Log::INFO, "----   Тест для LIRS-кэша   ----\n");
+    
+    Log::trace(Log::INFO, "----        Тест 1        ----\n");
+    Log::trace(Log::INFO, "Заполнение VIP-зоны (LIR) и повторный хит\n");
+    TEST<LIRS_Cache<int>> (4, std::vector<int>{1, 2, 3, 2});
+    Log::trace(Log::INFO, "\n");
+
+    Log::trace(Log::INFO, "----        Тест 2        ----\n");
+    Log::trace(Log::INFO, "Появление прохожих и призраков (Вытеснение из Очереди Q)\n");
+    TEST<LIRS_Cache<int>> (4, std::vector<int>{1, 2, 3, 4, 5});
+    Log::trace(Log::INFO, "\n");
+
+    Log::trace(Log::INFO, "----        Тест 3        ----\n");
+    Log::trace(Log::INFO, "Успешное возвращение прохожего: Хит по HIR_RESIDENT\n");
+    TEST<LIRS_Cache<int>> (4, std::vector<int>{1, 2, 3, 4, 4});
+    Log::trace(Log::INFO, "\n");
+
+    Log::trace(Log::INFO, "----        Тест 4        ----\n");
+    Log::trace(Log::INFO, "Эффект домино: Хит по призраку (HIR_NO_RESIDENT)\n");
+    TEST<LIRS_Cache<int>> (4, std::vector<int>{1, 2, 3, 4, 5, 4});
+    Log::trace(Log::INFO, "\n");
+
+    Log::trace(Log::INFO, "----        Тест 5        ----\n");
+    Log::trace(Log::INFO, "Работа дворника (prune): Очистка мусора при свержении дна\n");
+    TEST<LIRS_Cache<int>> (4, std::vector<int>{1, 2, 3, 4, 1, 5, 6, 4});
     Log::trace(Log::INFO, "\n");
 }

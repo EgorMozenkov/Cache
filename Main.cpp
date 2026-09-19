@@ -2,7 +2,8 @@
 
 int main()
 {
-    test_ARC ();
+    test_LIRS();
+    //test_ARC ();
     //test_TwoQ ();
     //test_LRU ();
     //test_LFU ();
