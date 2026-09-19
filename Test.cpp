@@ -11,30 +11,6 @@
 #include "Logger.hpp"
 
 
-void string_test_LRU ()
-{
-    std::vector<std::string> requests = {
-        "deepslate", "spruce_log", "calcite", "deepslate", 
-        "dark_oak", "calcite", "nether_brick", "spruce_log"
-    };
-
-    Log::trace(Log::INFO, "----   Тест для LRU-кэша   ----\n");
-    TEST<LRU_Cache<std::string>> (3, requests);
-    Log::trace(Log::INFO, "\n");
-}
-
-void string_test_LFU ()
-{
-    std::vector<std::string> requests = {
-        "deepslate", "spruce_log", "calcite", "deepslate", 
-        "dark_oak", "calcite", "nether_brick", "spruce_log"
-    };
-
-    Log::trace(Log::INFO, "----   Тест со строками для LFU-кэша   ----\n");
-    TEST<LFU_Cache<std::string>> (3, requests);
-    Log::trace(Log::INFO, "\n");
-}
-
 void test_LRU ()
 {
     Log::trace(Log::INFO, "----   Тест для LRU-кэша   ----\n");

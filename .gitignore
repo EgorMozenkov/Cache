@@ -2,3 +2,4 @@ cache_test
 *.out
 *.exe
 *.o
+test1.txt

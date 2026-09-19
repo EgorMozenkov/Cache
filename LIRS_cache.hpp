@@ -19,8 +19,8 @@ class LIRS_Cache : public ICache<Key> {
 
     struct ItemInfo {
         QueueType type;
-        IT it_S;                // история запросов
-        IT it_Q;                // список элементов
+        IT it_S;                
+        IT it_Q;                
         bool is_in_S;
     };
 
@@ -31,7 +31,7 @@ private:
     size_t capacity, LIR_capacity;
     size_t count_LIR;
 
-    // Функция для частки дна стека S
+    // Функция для чистки дна стека S
     void prune ()
     {
         Log::trace(Log::DEBUG, "Начало работы  функции для частки дна стека S");
@@ -88,9 +88,10 @@ public:
         }
     }
 
-    bool request(const Key& key) override
+    CacheResult<Key> request(const Key& key) override
     {
         auto it = LIRS_map.find(key);
+        CacheResult<Key> result = {false, false, Key{}};
 
         // Ключ найден в хэш-табллице
         if (it != LIRS_map.end()) {
@@ -105,7 +106,8 @@ public:
                 it->second.it_S = LIRS_list_S.begin();
                 prune();
 
-                return true;
+                result.hit = true;
+                return result;
             }
 
             // Кдюч найден в HIR_RESIDENT
@@ -135,7 +137,8 @@ public:
                     it->second.it_Q = LIRS_list_Q.begin();
                 }
 
-                return true;
+                result.hit = true;
+                return result;
             }
 
             // Ключ найден в HIR_NO_RESIDENT
@@ -164,7 +167,7 @@ public:
                     LIRS_list_Q.push_front(it->first);
                     it->second.it_Q = LIRS_list_Q.begin();
                 }
-                return false;
+                return result;
             }
         }
 
@@ -192,6 +195,9 @@ public:
                 else {
                     LIRS_map.erase(last_it);
                 }
+
+                result.has_evicted = true;
+                result.evicted_key = last_key_in_Q;
             }
             
             LIRS_list_S.push_front(key);
@@ -199,7 +205,32 @@ public:
             LIRS_map[key] = {QueueType::HIR_RESIDENT, LIRS_list_S.begin(), LIRS_list_Q.begin(), true};
         }
 
-        return false;
+        return result;
+    }
+
+
+    void erase(const Key& key) override
+    {
+        auto it_map = LIRS_map.find(key);
+    
+        if (it_map != LIRS_map.end()) {
+        
+            if(it_map->second.type == QueueType::LIR) {
+                LIRS_list_S.erase(it_map->second.it_S);
+                count_LIR--;
+            }
+            else if(it_map->second.type == QueueType::HIR_RESIDENT) {
+                LIRS_list_Q.erase(it_map->second.it_Q);
+                if (it_map->second.is_in_S) {
+                    LIRS_list_S.erase(it_map->second.it_S);
+                }
+            }
+            else if(it_map->second.type == QueueType::HIR_NO_RESIDENT) {
+                LIRS_list_S.erase(it_map->second.it_S);
+            }
+
+            LIRS_map.erase(it_map);
+        }
     }
 
 

@@ -20,7 +20,7 @@ void TEST (size_t N, const std::vector<Key>& keys)
     Log::trace(Log::DEBUG, "Приходят новые ключи!\n");
     for (const Key& key : keys) {
 
-        if (cache.request(key)) {
+        if (cache.request(key).hit) {
             HITS++;
         }
         cache.read_cache();
@@ -33,8 +33,12 @@ void TEST (size_t N, const std::vector<Key>& keys)
 
 void test_LRU ();
 void test_LFU ();
-void string_test_LRU ();
-void string_test_LFU ();
 void test_TwoQ ();
 void test_ARC ();
-void test_LIRS ();
+void test_LIRS ();  
+
+void string_test_LRU ();
+void string_test_LFU ();
+void string_test_TwoQ ();
+void string_test_ARC ();
+void string_test_LIRS ();

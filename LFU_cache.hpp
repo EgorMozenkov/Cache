@@ -29,55 +29,77 @@ public:
         min_freq = 0;
     }
 
-    bool request(const Key& key) override
+    CacheResult<Key> request(const Key& key) override
     {
-    if (capacity == 0) return false;
+    if (capacity == 0) return {false, false, Key{}};
 
-        Log::trace(Log::DEBUG, "Запрошен ключ: ", key, "\n");
-        auto it = LFU_map_key.find(key);
+    CacheResult<Key> result = {false, false, Key{}};
+
+    Log::trace(Log::DEBUG, "Запрошен ключ: ", key, "\n");
+    auto it = LFU_map_key.find(key);
 
 
-        if (it != LFU_map_key.end()) {
+    if (it != LFU_map_key.end()) {
 
-            Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " найден в кэше, переносим в начало\n");
-            int freq_before = LFU_map_key[key].freq;
-            LFU_map_key[key].freq++;
+        Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " найден в кэше, переносим в начало\n");
+        int freq_before = LFU_map_key[key].freq;
+        LFU_map_key[key].freq++;
 
-            // Перемещаем элемент в список с freq + 1
-            LFU_map_freq[freq_before + 1].splice
-                (LFU_map_freq[freq_before + 1].begin(), 
-                LFU_map_freq[freq_before], 
-                LFU_map_key[key].list_it);
+        // Перемещаем элемент в список с freq + 1
+        LFU_map_freq[freq_before + 1].splice
+            (LFU_map_freq[freq_before + 1].begin(), 
+            LFU_map_freq[freq_before], 
+            LFU_map_key[key].list_it);
 
-            // Проверяем не остался ли старый список пустым
-            if (LFU_map_freq[freq_before].empty() && min_freq == freq_before) {
-                min_freq++;
-            }
-
-            return true;
+        // Проверяем не остался ли старый список пустым
+        if (LFU_map_freq[freq_before].empty() && min_freq == freq_before) {
+            min_freq++;
         }
 
-        // Проверяем переполнение
-        if (LFU_map_key.size() == capacity) {
-
-            Key value_delete = LFU_map_freq[min_freq].back();
-            Log::trace(Log::DEBUG, "Вытеснение: Кэш переполнен. Удаляем самый не популярный ключ: ", value_delete, "\n");
-
-            LFU_map_freq[min_freq].pop_back();
-            LFU_map_key.erase(value_delete);
-        }
-
-        // Ставим в кэш новое значение
-        min_freq = 1;
-        LFU_map_freq[min_freq].push_front(key);
-        LFU_map_key[key].freq = min_freq;
-        LFU_map_key[key].list_it = LFU_map_freq[min_freq].begin();
-
-        Log::trace(Log::TRACE, "МИСС: Ключ ", key, " добавлен в кэш\n");
-
-        return false;
+        result.hit = true;
+        result.has_evicted = false;
+        result.evicted_key = Key{};
+        return result;
     }
 
+    // Проверяем переполнение
+    if (LFU_map_key.size() == capacity) {
+
+        Key value_delete = LFU_map_freq[min_freq].back();
+        Log::trace(Log::DEBUG, "Вытеснение: Кэш переполнен. Удаляем самый не популярный ключ: ", value_delete, "\n");
+
+        LFU_map_freq[min_freq].pop_back();
+        LFU_map_key.erase(value_delete);
+
+        result.has_evicted = true;
+        result.evicted_key = value_delete;
+    }
+
+    // Ставим в кэш новое значение
+    min_freq = 1;
+    LFU_map_freq[min_freq].push_front(key);
+    LFU_map_key[key].freq = min_freq;
+    LFU_map_key[key].list_it = LFU_map_freq[min_freq].begin();
+
+    Log::trace(Log::TRACE, "МИСС: Ключ ", key, " добавлен в кэш\n");
+
+    result.hit = false;
+    return result;
+    }
+
+    void erase(const Key& key) override
+    {
+        auto it_map = LFU_map_key.find(key);
+    
+        if (it_map != LFU_map_key.end()) {
+
+            int freq = it_map->second.freq;
+            auto list_it = it_map->second.list_it;
+            
+            LFU_map_freq[freq].erase(list_it);
+            LFU_map_key.erase(it_map);
+        }
+    }
 
     void read_cache() override
     {

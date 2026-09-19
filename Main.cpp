@@ -2,7 +2,15 @@
 
 int main()
 {
-    test_LIRS();
+    string_test_TwoQ();
+    string_test_ARC();
+    string_test_LIRS();
+    
+    
+    
+    
+    
+    //test_LIRS();
     //test_ARC ();
     //test_TwoQ ();
     //test_LRU ();

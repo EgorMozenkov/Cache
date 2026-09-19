@@ -41,10 +41,10 @@ public:
         capacity = N;
     }
 
-    bool request(const Key& key) override
+    CacheResult<Key> request(const Key& key) override
     {
         auto it = TwoQ_map.find(key);
-        
+        CacheResult<Key> result = {false, false, Key{}};       
 
         // Элемента нет ни в одной из очередей
         if (it == TwoQ_map.end()) {
@@ -60,6 +60,9 @@ public:
                     Log::trace(Log::DEBUG, "Вытеснение: Удаляем старейший ключ из OUT: ", value_2, "\n");
                     OUT_list.pop_back();
                     TwoQ_map.erase(value_2);
+
+                    result.has_evicted = true;
+                    result.evicted_key = value_2;
                 }
                 
                 // Переносим элемент из IN в OUT
@@ -72,7 +75,7 @@ public:
             TwoQ_map[key] = {QueueType::IN, IN_list.begin()};
             
             Log::trace(Log::TRACE, "МИСС: Ключ ", key, " добавлен в IN\n");
-            return false;
+            return result;
         }
 
         // Ключ найден
@@ -81,11 +84,15 @@ public:
         if (node.type == QueueType::VIP) {
             VIP_list.splice(VIP_list.begin(), VIP_list, node.list_it);
             Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " в VIP, переносим в начало\n");
-            return true;
+
+            result.hit = true;
+            return result;
         }
         else if (node.type == QueueType::IN) {
             Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " в IN, оставляем на месте\n");
-            return true;
+
+            result.hit = true;
+            return result;
         }
         else if (node.type == QueueType::OUT) {
             
@@ -95,6 +102,9 @@ public:
                 Log::trace(Log::DEBUG, "Вытеснение: VIP переполнен. Удаляем: ", evicted_vip, "\n");
                 TwoQ_map.erase(evicted_vip);
                 VIP_list.pop_back();
+
+                result.has_evicted = true;
+                result.evicted_key = evicted_vip;
             }
 
             OUT_list.erase(node.list_it);
@@ -105,12 +115,31 @@ public:
             node.list_it = VIP_list.begin();
             
             Log::trace(Log::TRACE, "МИСС: Ключ ", key, " повышен из OUT в VIP\n");
-            return false;
+            return result;
         }
 
-        return false;
+        return result;
     }
     
+    void erase(const Key& key) override
+    {
+        auto it_map = TwoQ_map.find(key);
+    
+        if (it_map != TwoQ_map.end()) {
+
+            if(it_map->second.type == QueueType::IN) {
+                IN_list.erase(it_map->second.list_it);
+            }
+            else if(it_map->second.type == QueueType::VIP) {
+                VIP_list.erase(it_map->second.list_it);
+            }
+            else if(it_map->second.type == QueueType::OUT) {
+                OUT_list.erase(it_map->second.list_it);
+            }
+
+            TwoQ_map.erase(it_map);
+        }
+    }
 
     void read_cache() override
     {

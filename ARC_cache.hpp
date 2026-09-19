@@ -31,7 +31,7 @@ private:
     size_t p;                                       // динамический размер MRU
 
 
-    void replace (const Key& key)
+    void replace (const Key& key, CacheResult<Key>& result)
     {
         auto it = ARC_map.find(key);
         bool is_mfu_ghost = false;
@@ -50,6 +50,9 @@ private:
 
             MRU_ghost_list.push_front(value_1);
             ARC_map[value_1] = {QueueType::MRU_ghost, MRU_ghost_list.begin()};
+
+            result.has_evicted = true;
+            result.evicted_key = value_1;
         }
         else if (MFU_list.size() > 0) {
 
@@ -60,6 +63,9 @@ private:
 
             MFU_ghost_list.push_front(value_2);
             ARC_map[value_2] = {QueueType::MFU_ghost, MFU_ghost_list.begin()};
+        
+            result.has_evicted = true;
+            result.evicted_key = value_2;
         }
     }
 
@@ -77,9 +83,10 @@ public:
     }
 
 
-    bool request(const Key& key) override 
+    CacheResult<Key> request(const Key& key) override 
     {
         auto it = ARC_map.find(key);
+        CacheResult<Key> result = {false, false, Key{}};
 
         // Ключ найден в хэш таблицe
         if (it != ARC_map.end()) {
@@ -95,7 +102,8 @@ public:
                 it->second.type = QueueType::MFU;
                 it->second.list_it = MFU_list.begin();
 
-                return true;
+                result.hit = true;
+                return result;
             }
 
             // Нашли в MFU
@@ -105,7 +113,8 @@ public:
 
                 MFU_list.splice(MFU_list.begin(), MFU_list, it->second.list_it);
 
-                return true;
+                result.hit = true;
+                return result;
             }
 
             // Нашли в MFU_ghost
@@ -127,7 +136,7 @@ public:
                 else {
                     p = 0;
                 }
-                replace(key);
+                replace(key, result);
 
                 MFU_ghost_list.erase (it->second.list_it);
                 MFU_list.push_front(key);
@@ -135,7 +144,7 @@ public:
                 it->second.type = QueueType::MFU;
                 it->second.list_it = MFU_list.begin();
 
-                return false;
+                return result;
             }
 
             //Нашли в MRU_ghost
@@ -153,13 +162,13 @@ public:
 
 
                 p = std::min(capacity, p + delta);
-                replace(key);
+                replace(key, result);
 
                 MRU_ghost_list.erase (it->second.list_it);
                 MFU_list.push_front(key);
                 ARC_map[key] = {QueueType::MFU, MFU_list.begin()};
 
-                return false;
+                return result;
             }
 
         }
@@ -171,9 +180,14 @@ public:
                 // Удаляем самого старого из MRU_ghost
                 ARC_map.erase(MRU_ghost_list.back());
                 MRU_ghost_list.pop_back();
+
             } 
             else {
-                // MRU_ghost его нет
+                // в MRU_ghost его нет
+
+                result.has_evicted = true;
+                result.evicted_key = MRU_list.back();
+
                 ARC_map.erase(MRU_list.back());
                 MRU_list.pop_back();
             }
@@ -185,14 +199,38 @@ public:
         
 
         if (MRU_list.size() + MFU_list.size() >= capacity) {
-            replace(key);
+            replace(key, result);
         }
 
         Log::trace(Log::TRACE, "МИСС: Ключ ", key, " не найден и добавлен в MRU\n");
         MRU_list.push_front(key);
         ARC_map[key] = {QueueType::MRU, MRU_list.begin()};
 
-        return false;
+        return result;
+    }
+
+
+    void erase(const Key& key) override
+    {
+        auto it_map = ARC_map.find(key);
+    
+        if (it_map != ARC_map.end()) {
+
+            if(it_map->second.type == QueueType::MFU) {
+                MFU_list.erase(it_map->second.list_it);
+            }
+            else if(it_map->second.type == QueueType::MRU) {
+                MRU_list.erase(it_map->second.list_it);
+            }
+            else if(it_map->second.type == QueueType::MFU_ghost) {
+                MFU_ghost_list.erase(it_map->second.list_it);
+            }
+            else if(it_map->second.type == QueueType::MRU_ghost) {
+                MRU_ghost_list.erase(it_map->second.list_it);
+            }
+
+            ARC_map.erase(it_map);
+        }
     }
 
 

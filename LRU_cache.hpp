@@ -11,6 +11,7 @@ class LRU_Cache : public ICache<Key> {
     using IT = typename std::list<Key>::iterator;
 
 private:
+
     std::list<Key> LRU_list;
     std::unordered_map<Key, IT> LRU_map;
     size_t capacity;
@@ -21,9 +22,10 @@ public:
         capacity = N;
     }
 
-    bool request(const Key& key) override
+    CacheResult<Key> request(const Key& key) override
     {
-        if (capacity == 0) return false;
+        if (capacity == 0) return {false, false, Key{}};
+        CacheResult<Key> result = {false, false, Key{}};
 
         Log::trace(Log::DEBUG, "Запрошен ключ: ", key, "\n");
         auto it = LRU_map.find(key);
@@ -33,7 +35,11 @@ public:
             Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " найден в кэше, переносим в начало\n");
             LRU_list.splice (LRU_list.begin(), LRU_list, it->second);
 
-            return true;
+            result.hit = true;
+            result.has_evicted = false;
+            result.evicted_key = Key{};
+
+            return result;
         }
 
         if (LRU_list.size() == capacity) {
@@ -44,6 +50,9 @@ public:
 
             LRU_map.erase(last_value);
             LRU_list.pop_back();
+
+            result.has_evicted = true;
+            result.evicted_key = last_value;
         }
 
         Log::trace(Log::TRACE, "МИСС: Ключ ", key, " добавлен в кэш\n");
@@ -51,9 +60,20 @@ public:
         LRU_list.push_front(key);
         LRU_map[key] = LRU_list.begin();
 
-        return false;
+        result.hit = false;
+
+        return result;
     }
 
+    void erase(const Key& key) override
+    {
+        auto it_map = LRU_map.find(key);
+
+        if (it_map != LRU_map.end()) {
+            LRU_list.erase(it_map->second);
+            LRU_map.erase(it_map);
+        }
+    }
 
     void read_cache() override
     {
