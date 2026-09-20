@@ -74,7 +74,7 @@ public:
             IN_list.push_front(key);
             TwoQ_map[key] = {QueueType::IN, IN_list.begin()};
             
-            Log::trace(Log::TRACE, "МИСС: Ключ ", key, " добавлен в IN\n");
+            Log::trace(Log::DEBUG, "МИСС: Ключ ", key, " добавлен в IN\n");
             return result;
         }
 
@@ -83,13 +83,13 @@ public:
 
         if (node.type == QueueType::VIP) {
             VIP_list.splice(VIP_list.begin(), VIP_list, node.list_it);
-            Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " в VIP, переносим в начало\n");
+            Log::trace(Log::DEBUG, "ХИТ: Ключ ", key, " в VIP, переносим в начало\n");
 
             result.hit = true;
             return result;
         }
         else if (node.type == QueueType::IN) {
-            Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " в IN, оставляем на месте\n");
+            Log::trace(Log::DEBUG, "ХИТ: Ключ ", key, " в IN, оставляем на месте\n");
 
             result.hit = true;
             return result;
@@ -114,12 +114,29 @@ public:
             node.type = QueueType::VIP;
             node.list_it = VIP_list.begin();
             
-            Log::trace(Log::TRACE, "МИСС: Ключ ", key, " повышен из OUT в VIP\n");
+            Log::trace(Log::DEBUG, "МИСС: Ключ ", key, " повышен из OUT в VIP\n");
             return result;
         }
 
         return result;
     }
+
+
+    bool contains(const Key& key) override
+    {
+        auto it = TwoQ_map.find(key);
+
+        if (it == TwoQ_map.end()) {
+            return false;
+        }
+
+        if (it->second.type == QueueType::IN || it->second.type == QueueType::VIP) {
+            return true;
+        }
+
+        return false;
+    }
+
     
     void erase(const Key& key) override
     {
@@ -141,13 +158,27 @@ public:
         }
     }
 
+
+    std::vector<Key> get_elements() override 
+    {
+        std::vector<Key> result;
+        for(const Key& value : VIP_list) {
+            result.push_back(value);
+        }
+        for(const Key& value : IN_list) {
+            result.push_back(value);
+        }
+        return result;
+    }
+
+
     void read_cache() override
     {
         Log::trace(Log::INFO, "Начало кэша |  ");
-        for(Key value : VIP_list) {
+        for(const Key& value : VIP_list) {
             Log::trace(Log::INFO, value, " |  ");
         }
-        for(Key value : IN_list) {
+        for(const Key& value : IN_list) {
             Log::trace(Log::INFO, value, " |  ");
         }
         Log::trace(Log::INFO, "Конец кэша |\n");

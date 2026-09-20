@@ -8,7 +8,7 @@
 #include "Logger.hpp"
 
 struct Config {
-    int levels;
+    size_t levels;
     std::vector<std::string> algorithms;
 };
 

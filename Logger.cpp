@@ -2,7 +2,7 @@
 
 namespace Log 
 {
-    LogLevel log_level = DEBUG;
+    LogLevel log_level = TRACE;
 
     LogLevel set_log_level(LogLevel level) {
     LogLevel old_log_level = log_level;

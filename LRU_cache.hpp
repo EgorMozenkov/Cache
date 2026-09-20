@@ -32,7 +32,7 @@ public:
 
         if (it != LRU_map.end()) {
 
-            Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " найден в кэше, переносим в начало\n");
+            Log::trace(Log::DEBUG, "ХИТ: Ключ ", key, " найден в кэше, переносим в начало\n");
             LRU_list.splice (LRU_list.begin(), LRU_list, it->second);
 
             result.hit = true;
@@ -55,7 +55,7 @@ public:
             result.evicted_key = last_value;
         }
 
-        Log::trace(Log::TRACE, "МИСС: Ключ ", key, " добавлен в кэш\n");
+        Log::trace(Log::DEBUG, "МИСС: Ключ ", key, " добавлен в кэш\n");
 
         LRU_list.push_front(key);
         LRU_map[key] = LRU_list.begin();
@@ -64,6 +64,13 @@ public:
 
         return result;
     }
+
+
+    bool contains(const Key& key) override
+    {
+        return (LRU_map.find(key) != LRU_map.end());
+    }
+
 
     void erase(const Key& key) override
     {
@@ -74,6 +81,17 @@ public:
             LRU_map.erase(it_map);
         }
     }
+
+
+    std::vector<Key> get_elements() override 
+    {
+        std::vector<Key> result;
+        for (const Key& key : LRU_list) {
+            result.push_back(key);
+        }
+        return result;
+    }
+
 
     void read_cache() override
     {

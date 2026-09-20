@@ -94,7 +94,7 @@ public:
             // Нашли в MRU
             if (it->second.type == QueueType::MRU) {
 
-                Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " в MRU, переносим его в начало MFU\n");
+                Log::trace(Log::DEBUG, "ХИТ: Ключ ", key, " в MRU, переносим его в начало MFU\n");
 
                 MRU_list.erase (it->second.list_it);
                 MFU_list.push_front(key);
@@ -109,7 +109,7 @@ public:
             // Нашли в MFU
             if (it->second.type == QueueType::MFU) {
 
-                Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " в MFU, переносим его в начало MFU\n");
+                Log::trace(Log::DEBUG, "ХИТ: Ключ ", key, " в MFU, переносим его в начало MFU\n");
 
                 MFU_list.splice(MFU_list.begin(), MFU_list, it->second.list_it);
 
@@ -120,7 +120,7 @@ public:
             // Нашли в MFU_ghost
             if (it->second.type == QueueType::MFU_ghost) {
 
-                Log::trace(Log::TRACE, "МИСС: Ключ ", key, " ключ найден в MFU_ghost\n");
+                Log::trace(Log::DEBUG, "МИСС: Ключ ", key, " ключ найден в MFU_ghost\n");
 
                 size_t delta = 0;
                 if (MFU_ghost_list.size() >= MRU_ghost_list.size()) {
@@ -150,7 +150,7 @@ public:
             //Нашли в MRU_ghost
             if (it->second.type == QueueType::MRU_ghost) {
                 
-                Log::trace(Log::TRACE, "МИСС: Ключ ", key, " ключ найден в MRU_ghost\n");
+                Log::trace(Log::DEBUG, "МИСС: Ключ ", key, " ключ найден в MRU_ghost\n");
 
                 size_t delta = 0;
                 if (MRU_ghost_list.size() >= MFU_ghost_list.size()) {
@@ -210,6 +210,22 @@ public:
     }
 
 
+    bool contains(const Key& key) override
+    {
+        auto it = ARC_map.find(key);
+
+        if (it == ARC_map.end()) {
+            return false;
+        }
+
+        if (it->second.type == QueueType::MFU || it->second.type == QueueType::MRU) {
+            return true;
+        }
+
+        return false;
+    }
+
+
     void erase(const Key& key) override
     {
         auto it_map = ARC_map.find(key);
@@ -234,17 +250,30 @@ public:
     }
 
 
+    std::vector<Key> get_elements() override 
+    {
+        std::vector<Key> result;
+        for(const Key& value : MFU_list) {
+            result.push_back(value);
+        }
+        for(const Key& value : MRU_list) {
+            result.push_back(value);
+        }
+        return result;
+    }
+
+
     void read_cache() override 
     {
         Log::trace(Log::INFO, "Динамический размер p: ", p, "\n");
 
         Log::trace(Log::INFO, "Начало кэша |  ");
         Log::trace(Log::INFO, "Начало MFU |  ");
-        for(Key value : MFU_list) {
+        for(const Key& value : MFU_list) {
             Log::trace(Log::INFO, value, " |  ");
         }
         Log::trace(Log::INFO, "Начало MRU |  ");
-        for(Key value : MRU_list) {
+        for(const Key& value : MRU_list) {
             Log::trace(Log::INFO, value, " |  ");
         }
         Log::trace(Log::INFO, "Конец кэша |\n");
@@ -252,13 +281,13 @@ public:
         // Запись призрачной части
         Log::trace(Log::DEBUG, "Запись призрачной части\n");
         Log::trace(Log::DEBUG, "MFU_ghost |  ");
-        for(Key value : MFU_ghost_list) {
+        for(const Key& value : MFU_ghost_list) {
             Log::trace(Log::DEBUG, value, " |  ");
         }
         Log::trace(Log::DEBUG, "\n");
 
         Log::trace(Log::DEBUG, "MRU_ghost |  ");
-        for(Key value : MRU_ghost_list) {
+        for(const Key& value : MRU_ghost_list) {
             Log::trace(Log::DEBUG, value, " |  ");
         }
         Log::trace(Log::DEBUG, "\n");

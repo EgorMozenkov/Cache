@@ -18,17 +18,22 @@ void TEST (size_t N, const std::vector<Key>& keys)
     Log::trace(Log::INFO, "--- Исходное состояние кэша ---\n");
     cache.read_cache();
     Log::trace(Log::DEBUG, "Приходят новые ключи!\n");
-    for (const Key& key : keys) {
-
-        if (cache.request(key).hit) {
+    for(const Key& key : keys) {
+        Log::trace(Log::INFO, "Запрошен ключ: ", key, "\n");
+        
+        if(cache.request(key).hit) {
+            Log::trace(Log::INFO, "-> ХИТ!\n");
             HITS++;
+        } else {
+            Log::trace(Log::INFO, "-> МИСС!\n");
         }
+        
         cache.read_cache();
         total_request++;
     }
     Log::trace(Log::INFO, "--- Cостояние кэша после теста ---\n");
     cache.read_cache();
-    Log::trace(Log::TRACE, "Количество запросов: ", total_request, ", Количество хитов: ", HITS, "\n");
+    Log::trace(Log::ERROR, "Количество запросов: ", total_request, ", Количество хитов: ", HITS, "\n");
 }
 
 void test_LRU ();

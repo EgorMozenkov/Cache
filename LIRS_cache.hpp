@@ -99,7 +99,7 @@ public:
             // Ключ найден в LIR
             if(it->second.type == QueueType::LIR) {
 
-                Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " найден в LIR, переносим в начало\n");
+                Log::trace(Log::DEBUG, "ХИТ: Ключ ", key, " найден в LIR, переносим в начало\n");
             
                 LIRS_list_S.erase(it->second.it_S);
                 LIRS_list_S.push_front(key);
@@ -113,7 +113,7 @@ public:
             // Кдюч найден в HIR_RESIDENT
             if(it->second.type == QueueType::HIR_RESIDENT) {
 
-                Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " найден в HIR, переносим в начало\n");
+                Log::trace(Log::DEBUG, "ХИТ: Ключ ", key, " найден в HIR, переносим в начало\n");
             
                 bool in_stack = it->second.is_in_S;
 
@@ -144,7 +144,7 @@ public:
             // Ключ найден в HIR_NO_RESIDENT
             if(it->second.type == QueueType::HIR_NO_RESIDENT) {
 
-                Log::trace(Log::TRACE, "МИСС: Ключ ", key, " найден в призраке HIR\n");
+                Log::trace(Log::DEBUG, "МИСС: Ключ ", key, " найден в призраке HIR\n");
 
                 bool in_stack = it->second.is_in_S;
 
@@ -172,7 +172,7 @@ public:
         }
 
         //Ключ не найден в хэш-таблице
-        Log::trace(Log::TRACE, "МИСС: Ключ ", key, " не найден и добавлен в HIR\n");
+        Log::trace(Log::DEBUG, "МИСС: Ключ ", key, " не найден и добавлен в HIR\n");
 
         if (count_LIR < LIR_capacity) {
             LIRS_list_S.push_front(key);
@@ -209,6 +209,22 @@ public:
     }
 
 
+    bool contains(const Key& key) override
+    {
+        auto it = LIRS_map.find(key);
+
+        if (it == LIRS_map.end()) {
+            return false;
+        }
+
+        if (it->second.type == QueueType::LIR || it->second.type == QueueType::HIR_RESIDENT) {
+            return true;
+        }
+
+        return false;
+    }
+
+
     void erase(const Key& key) override
     {
         auto it_map = LIRS_map.find(key);
@@ -231,6 +247,22 @@ public:
 
             LIRS_map.erase(it_map);
         }
+    }
+
+
+    std::vector<Key> get_elements() override 
+    {
+        std::vector<Key> result;
+        for (const Key& value : LIRS_list_S) {
+            if (LIRS_map[value].type == QueueType::LIR) { 
+                result.push_back(value);
+            }
+        }
+        
+        for (const Key& value : LIRS_list_Q) {
+            result.push_back(value);
+        }
+        return result;
     }
 
 

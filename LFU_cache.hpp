@@ -41,7 +41,7 @@ public:
 
     if (it != LFU_map_key.end()) {
 
-        Log::trace(Log::TRACE, "ХИТ: Ключ ", key, " найден в кэше, переносим в начало\n");
+        Log::trace(Log::DEBUG, "ХИТ: Ключ ", key, " найден в кэше, переносим в начало\n");
         int freq_before = LFU_map_key[key].freq;
         LFU_map_key[key].freq++;
 
@@ -81,11 +81,18 @@ public:
     LFU_map_key[key].freq = min_freq;
     LFU_map_key[key].list_it = LFU_map_freq[min_freq].begin();
 
-    Log::trace(Log::TRACE, "МИСС: Ключ ", key, " добавлен в кэш\n");
+    Log::trace(Log::DEBUG, "МИСС: Ключ ", key, " добавлен в кэш\n");
 
     result.hit = false;
     return result;
     }
+
+
+    bool contains(const Key& key) override
+    {
+        return (LFU_map_key.find(key) != LFU_map_key.end());
+    }
+
 
     void erase(const Key& key) override
     {
@@ -100,6 +107,20 @@ public:
             LFU_map_key.erase(it_map);
         }
     }
+
+
+    std::vector<Key> get_elements() override 
+    {
+        std::vector<Key> result;
+        for(const auto& item : LFU_map_freq) {
+            for (const Key& key : item.second) {
+                result.push_back(key);
+            }
+            
+        }
+        return result;
+    }
+
 
     void read_cache() override
     {
