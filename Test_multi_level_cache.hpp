@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -11,6 +10,38 @@
 #include "Logger.hpp"
 #include "File_request.hpp"
 #include "Multi_Level_cache.hpp"
+
+template <typename Key> 
+void data_output(Multi_Level_Cache<Key>& cache, const Config& conf, const InputData<Key>& data)
+{
+    size_t HITS = 0;
+    size_t total_requests = 0;
+
+    // Берем данные из структуры data
+    Log::trace(Log::ERROR, "Создана многоуровневая система. Размер: ", data.Cache_size, ", уровни: ", conf.levels, "\n");
+    Log::trace(Log::INFO, "--- Исходное состояние кэша ---\n");
+    //cache.read_cache();
+    Log::trace(Log::DEBUG, "Приходят новые ключи!\n");
+
+    // Итерируемся по вектору из структуры data
+    for(const Key& key : data.keys) {
+        Log::trace(Log::INFO, "Запрошен ключ: ", key, "\n");
+        
+        if(cache.request(key).hit) {
+            Log::trace(Log::INFO, "-> ХИТ!\n");
+            HITS++;
+        } else {
+            Log::trace(Log::INFO, "-> МИСС!\n");
+        }
+        
+        //cache.read_cache();
+        total_requests++;
+    }
+
+    Log::trace(Log::INFO, "--- Cостояние кэша после теста ---\n");
+    //cache.read_cache();
+    Log::trace(Log::ERROR, "Количество запросов: ", total_requests, ", Количество хитов: ", HITS, "\n\n");
+}
 
 template <typename Key> 
 void test_multi_level_cache(size_t capacity, const std::vector<std::string>& algos, const std::vector<Key>& keys) 
@@ -26,29 +57,22 @@ void test_multi_level_cache(size_t capacity, const std::vector<std::string>& alg
 
     Multi_Level_Cache<Key> cache(conf, data);
 
-    size_t HITS = 0;
-    size_t total_requests = 0;
+    data_output(cache, conf, data);
+}
 
-    Log::trace(Log::INFO, "Создана многоуровневая система. Размер: ", capacity, ", уровни: ", conf.levels, "\n");
-    Log::trace(Log::INFO, "--- Исходное состояние кэша ---\n");
-    cache.read_cache();
-    Log::trace(Log::DEBUG, "Приходят новые ключи!\n");
+template <typename Key> 
+void file_test(const std::string& filename) 
+{
+    Config conf;
+    InputData<Key> data;
 
-    for(const Key& key : keys) {
-        Log::trace(Log::INFO, "Запрошен ключ: ", key, "\n");
-        
-        if(cache.request(key).hit) {
-            Log::trace(Log::INFO, "-> ХИТ!\n");
-            HITS++;
-        } else {
-            Log::trace(Log::INFO, "-> МИСС!\n");
-        }
-        
-        cache.read_cache();
-        total_requests++;
+    read_file(filename, conf, data);
+
+    if (data.num_requests == 0) {
+        return; 
     }
 
-    Log::trace(Log::INFO, "--- Cостояние кэша после теста ---\n");
-    cache.read_cache();
-    Log::trace(Log::ERROR, "Количество запросов: ", total_requests, ", Количество хитов: ", HITS, "\n");
+    Multi_Level_Cache<Key> cache(conf, data);
+
+    data_output(cache, conf, data);
 }

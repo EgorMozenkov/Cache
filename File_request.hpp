@@ -20,9 +20,9 @@ struct InputData {
 };
 
 template <typename Key>
-void read_file(Config& conf, InputData<Key>& data)
+void read_file(const std::string& filename, Config& conf, InputData<Key>& data)
 {
-    std::ifstream file("test1.txt");
+    std::ifstream file(filename);
 
     if (!file.is_open()) {
         std::cerr << "Ошибка: не удалось открыть файл!" << '\n';
@@ -44,7 +44,7 @@ void read_file(Config& conf, InputData<Key>& data)
         file >> temp_key;               
         data.keys.push_back(temp_key);  
         
-        Log::trace(Log::INFO, "Прочитан ключ: ", temp_key, "\n");
+        Log::trace(Log::DEBUG, "Прочитан ключ: ", temp_key, "\n");
     }
 
     file.close();
