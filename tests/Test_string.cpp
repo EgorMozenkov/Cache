@@ -7,6 +7,7 @@
 #include "ARC_cache.hpp"
 #include "LIRS_cache.hpp"
 #include "Test.hpp"
+#include "Test_engine.hpp"
 #include "Logger.hpp"
 
 

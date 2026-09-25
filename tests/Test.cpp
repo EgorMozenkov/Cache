@@ -8,8 +8,10 @@
 #include "ARC_cache.hpp"
 #include "LIRS_cache.hpp"
 #include "Test.hpp"
+#include "Test_engine.hpp"
 #include "Logger.hpp"
-
+#include "Ideal_cache.hpp"
+#include "Test_ideal_cache.hpp"
 
 void test_LRU ()
 {
@@ -142,5 +144,30 @@ void test_LIRS ()
     Log::trace(Log::INFO, "----        Тест 5        ----\n");
     Log::trace(Log::INFO, "Работа дворника (prune): Очистка мусора при свержении дна\n");
     TEST<LIRS_Cache<int>> (4, std::vector<int>{1, 2, 3, 4, 1, 5, 6, 4});
+    Log::trace(Log::INFO, "\n");
+}
+
+void test_ideal_cache ()
+{
+    Log::trace(Log::INFO, "----   Тест для идеального кэша   ----\n");
+    
+    Log::trace(Log::INFO, "----        Тест 1        ----\n");
+    TEST_Ideal_cache<int> (3, std::vector<int>{1, 2, 3, 4, 1, 2});
+    Log::trace(Log::INFO, "\n");
+
+    Log::trace(Log::INFO, "----        Тест 2        ----\n");
+    TEST_Ideal_cache<int> (3, std::vector<int>{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4});
+    Log::trace(Log::INFO, "\n");
+
+    Log::trace(Log::INFO, "----        Тест 3        ----\n");
+    TEST_Ideal_cache<int> (4, std::vector<int>{1, 2, 3, 4, 5, 1, 6, 2, 7, 3});
+    Log::trace(Log::INFO, "\n");
+
+    Log::trace(Log::INFO, "----        Тест 4        ----\n");
+    TEST_Ideal_cache<int> (3, std::vector<int>{1, 1, 1, 1, 2, 3, 4, 2, 3, 4});
+    Log::trace(Log::INFO, "\n");
+
+    Log::trace(Log::INFO, "----        Тест 5        ----\n");
+    TEST_Ideal_cache<int> (4, std::vector<int>{1, 2, 3, 4, 1, 2, 3, 4, 1, 4, 2, 3});
     Log::trace(Log::INFO, "\n");
 }

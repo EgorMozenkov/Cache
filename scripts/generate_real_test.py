@@ -3,9 +3,9 @@ import random
 filename = "real_test.txt"
 levels = 4
 algorithms = "LFU 2Q ARC LIRS"
-cache_size = 1000
-num_requests = 1000000
-unique_keys = 5000
+cache_size = 10000
+num_requests = 10000000
+unique_keys = 50000
 
 print("Вычисление весов по закону Ципфа...")
 weights = [1.0 / (i ** 1.0) for i in range(1, unique_keys + 1)]

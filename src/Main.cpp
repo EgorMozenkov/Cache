@@ -5,11 +5,14 @@
 
 #include "Logger.hpp"
 #include "Test.hpp" 
-#include "Test_multi_level_cache.hpp" 
+#include "Test_engine.hpp" 
 #include "benchmark.hpp"
+
 
 int main(int argc, char* argv[]) 
 {
+    test_ideal_cache();
+
     // Если запустили просто ./app без аргументов
     if (argc < 2) {
         std::cerr << "Использование:\n";

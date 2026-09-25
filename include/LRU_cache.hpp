@@ -122,7 +122,7 @@ template <typename Key>
 void LRU_Cache<Key>::read_cache()
 {
     Log::trace(Log::INFO, "Начало кэша |  ");
-    for(Key value : LRU_list) {
+    for(const Key& value : LRU_list) {
         Log::trace(Log::INFO, value, " |  ");
     }
     Log::trace(Log::INFO, "Конец кэша |\n");

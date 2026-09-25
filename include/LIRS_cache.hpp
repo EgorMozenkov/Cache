@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <list>
 #include <unordered_map>
+#include <assert.h>
+
 #include "I_cache.hpp"
 #include "Logger.hpp"
 
@@ -199,6 +201,22 @@ CacheResult<Key> LIRS_Cache<Key>::request(const Key& key)
             
             Log::trace(Log::DEBUG, "МИСС: Ключ ", key, " найден в призраке HIR\n");
             
+            if (count_LIR + LIRS_list_Q.size() >= capacity) {
+                Key victim = LIRS_list_Q.back();
+                auto victim_it = LIRS_map.find(victim);
+                
+                LIRS_list_Q.pop_back();
+                
+                if (victim_it->second.is_in_S) {
+                    victim_it->second.type = QueueType::HIR_NO_RESIDENT;
+                } else {
+                    LIRS_map.erase(victim_it);
+                }
+                
+                result.has_evicted = true;
+                result.evicted_key = victim;
+            }
+            
             bool in_stack = it->second.is_in_S;
             
             if (in_stack) {
@@ -258,6 +276,7 @@ CacheResult<Key> LIRS_Cache<Key>::request(const Key& key)
         LIRS_map[key] = {QueueType::HIR_RESIDENT, LIRS_list_S.begin(), LIRS_list_Q.begin(), true};
     }
     
+    assert(count_LIR + LIRS_list_Q.size() <= capacity);
     return result;
 }
 
