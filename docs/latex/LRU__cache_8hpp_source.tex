@@ -1,0 +1,122 @@
+\doxysection{LRU\+\_\+cache.\+hpp}
+\hypertarget{LRU__cache_8hpp_source}{}\label{LRU__cache_8hpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <list>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}I\_cache.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}Logger.hpp"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00017\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00018\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classLRU__Cache}{LRU\_Cache}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classICache}{ICache}}<Key>\ \{}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keyword}{using\ }IT\ =\ \textcolor{keyword}{typename}\ std::list<Key>::iterator;}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ std::list<Key>\ LRU\_list;}
+\DoxyCodeLine{00025\ \ \ \ \ std::unordered\_map<Key,\ IT>\ LRU\_map;}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ capacity;}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00034\ \ \ \ \ \mbox{\hyperlink{classLRU__Cache}{LRU\_Cache}}(\textcolor{keywordtype}{size\_t}\ N);}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ request(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{bool}\ contains(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{void}\ erase(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00039\ \ \ \ \ std::vector<Key>\ get\_elements()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{void}\ read\_cache()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00041\ \};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00045\ \mbox{\hyperlink{classLRU__Cache_a5537b70d872bef0b7b9f059ac63e843a}{LRU\_Cache<Key>::LRU\_Cache}}(\textcolor{keywordtype}{size\_t}\ N)}
+\DoxyCodeLine{00046\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ capacity\ =\ N;}
+\DoxyCodeLine{00048\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00051\ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ \mbox{\hyperlink{classLRU__Cache}{LRU\_Cache<Key>::request}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00052\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordflow}{if}\ (capacity\ ==\ 0)\ \textcolor{keywordflow}{return}\ \{\textcolor{keyword}{false},\ \textcolor{keyword}{false},\ Key\{\}\};}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ result\ =\ \{\textcolor{keyword}{false},\ \textcolor{keyword}{false},\ Key\{\}\};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}Запрошен\ ключ:\ "{}},\ key,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ LRU\_map.find(key);}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ LRU\_map.end())\ \{}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}ХИТ:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ найден\ в\ кэше,\ переносим\ в\ начало\(\backslash\)n"{}});}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ LRU\_list.splice\ (LRU\_list.begin(),\ LRU\_list,\ it-\/>second);}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ result.hit\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ result.has\_evicted\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ result.evicted\_key\ =\ Key\{\};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (LRU\_list.size()\ ==\ capacity)\ \{}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ Key\ last\_value\ =\ LRU\_list.back();}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}Вытеснение:\ Кэш\ переполнен.\ Удаляем\ старейший\ ключ:\ "{}},\ last\_value,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ LRU\_map.erase(last\_value);}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ LRU\_list.pop\_back();}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ result.has\_evicted\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ result.evicted\_key\ =\ last\_value;}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}МИСС:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ добавлен\ в\ кэш\(\backslash\)n"{}});}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ LRU\_list.push\_front(key);}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ LRU\_map[key]\ =\ LRU\_list.begin();}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ result.hit\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00092\ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00095\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classLRU__Cache}{LRU\_Cache<Key>::contains}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00096\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordflow}{return}\ (LRU\_map.find(key)\ !=\ LRU\_map.end());}
+\DoxyCodeLine{00098\ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00101\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classLRU__Cache}{LRU\_Cache<Key>::erase}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00102\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keyword}{auto}\ it\_map\ =\ LRU\_map.find(key);}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\_map\ !=\ LRU\_map.end())\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ LRU\_list.erase(it\_map-\/>second);}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ LRU\_map.erase(it\_map);}
+\DoxyCodeLine{00108\ \ \ \ \ \}}
+\DoxyCodeLine{00109\ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00112\ std::vector<Key>\ \mbox{\hyperlink{classLRU__Cache}{LRU\_Cache<Key>::get\_elements}}()}
+\DoxyCodeLine{00113\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ std::vector<Key>\ result;}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ Key\&\ key\ :\ LRU\_list)\ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ result.push\_back(key);}
+\DoxyCodeLine{00117\ \ \ \ \ \}}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00119\ \}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00122\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classLRU__Cache}{LRU\_Cache<Key>::read\_cache}}()}
+\DoxyCodeLine{00123\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Начало\ кэша\ |\ \ "{}});}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordflow}{for}(Key\ value\ :\ LRU\_list)\ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ value,\ \textcolor{stringliteral}{"{}\ |\ \ "{}});}
+\DoxyCodeLine{00127\ \ \ \ \ \}}
+\DoxyCodeLine{00128\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Конец\ кэша\ |\(\backslash\)n"{}});}
+\DoxyCodeLine{00129\ \}}
+
+\end{DoxyCode}

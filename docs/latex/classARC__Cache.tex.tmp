@@ -1,0 +1,128 @@
+\doxysection{ARC\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classARC__Cache}{}\label{classARC__Cache}\index{ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}}
+
+
+Алгоритм вытеснения ARC (Adaptive Replacement Cache).  
+
+
+
+
+{\ttfamily \#include $<$ARC\+\_\+cache.\+hpp$>$}
+
+
+
+Inheritance diagram for ARC\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>}\+:
+% FIG 0
+
+
+Collaboration diagram for ARC\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>}\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classARC__Cache_adb21b23a80d1d7c0cac4942d8d6254a4}{ARC\+\_\+\+Cache}} (size\+\_\+t N)
+\begin{DoxyCompactList}\small\item\em Инициализирует кэш ARC. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structCacheResult}{Cache\+Result}}$<$ Key $>$ \mbox{\hyperlink{classARC__Cache_a76f0611a57fbc37bf53d4296c8d073d5}{request}} (const Key \&key) override
+\item 
+bool \mbox{\hyperlink{classARC__Cache_ab15cefcf2d0aad0c0feb8fb4baaee53e}{contains}} (const Key \&key) override
+\item 
+void \mbox{\hyperlink{classARC__Cache_a73dd1a791795f335c0797a7c17e84aa1}{erase}} (const Key \&key) override
+\item 
+std\+::vector$<$ Key $>$ \mbox{\hyperlink{classARC__Cache_a9e4298556a26d37dfa4f4273121eb038}{get\+\_\+elements}} () override
+\item 
+void \mbox{\hyperlink{classARC__Cache_ae335a55531b731e003d746b3d781c34f}{read\+\_\+cache}} () override
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Key$>$\newline
+class ARC\+\_\+\+Cache$<$ Key $>$}
+Алгоритм вытеснения ARC (Adaptive Replacement Cache). 
+
+Динамически балансирует между недавностью (MRU) и частотой (MFU) использования, адаптируясь под паттерны нагрузки. Использует "{}призрачные"{} очереди (ghost lists) для отслеживания вытесненных ключей. Самостоятельно настраивает целевой размер MRU (параметр p) на основе промахов. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classARC__Cache_adb21b23a80d1d7c0cac4942d8d6254a4}\label{classARC__Cache_adb21b23a80d1d7c0cac4942d8d6254a4} 
+\index{ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}!ARC\_Cache@{ARC\_Cache}}
+\index{ARC\_Cache@{ARC\_Cache}!ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{ARC\_Cache()}{ARC\_Cache()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+\mbox{\hyperlink{classARC__Cache}{ARC\+\_\+\+Cache}}$<$ Key $>$\mbox{\hyperlink{classARC__Cache}{\+::\+ARC\+\_\+\+Cache}} (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{N }\end{DoxyParamCaption})}
+
+
+
+Инициализирует кэш ARC. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em N} & Общая вместимость кэша (capacity). Призрачные очереди B1 и B2 также получат суммарный лимит N. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em std\+::invalid\+\_\+argument} & Если размер кэша меньше или равен 4. \\
+\hline
+\end{DoxyExceptions}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classARC__Cache_ab15cefcf2d0aad0c0feb8fb4baaee53e}\label{classARC__Cache_ab15cefcf2d0aad0c0feb8fb4baaee53e} 
+\index{ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}!contains@{contains}}
+\index{contains@{contains}!ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+bool \mbox{\hyperlink{classARC__Cache}{ARC\+\_\+\+Cache}}$<$ Key $>$\+::contains (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classARC__Cache_a73dd1a791795f335c0797a7c17e84aa1}\label{classARC__Cache_a73dd1a791795f335c0797a7c17e84aa1} 
+\index{ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}!erase@{erase}}
+\index{erase@{erase}!ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{erase()}{erase()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+void \mbox{\hyperlink{classARC__Cache}{ARC\+\_\+\+Cache}}$<$ Key $>$\+::erase (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classARC__Cache_a9e4298556a26d37dfa4f4273121eb038}\label{classARC__Cache_a9e4298556a26d37dfa4f4273121eb038} 
+\index{ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}!get\_elements@{get\_elements}}
+\index{get\_elements@{get\_elements}!ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{get\_elements()}{get\_elements()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+std\+::vector$<$ Key $>$ \mbox{\hyperlink{classARC__Cache}{ARC\+\_\+\+Cache}}$<$ Key $>$\+::get\+\_\+elements (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classARC__Cache_ae335a55531b731e003d746b3d781c34f}\label{classARC__Cache_ae335a55531b731e003d746b3d781c34f} 
+\index{ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}!read\_cache@{read\_cache}}
+\index{read\_cache@{read\_cache}!ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{read\_cache()}{read\_cache()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+void \mbox{\hyperlink{classARC__Cache}{ARC\+\_\+\+Cache}}$<$ Key $>$\+::read\+\_\+cache (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classARC__Cache_a76f0611a57fbc37bf53d4296c8d073d5}\label{classARC__Cache_a76f0611a57fbc37bf53d4296c8d073d5} 
+\index{ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}!request@{request}}
+\index{request@{request}!ARC\_Cache$<$ Key $>$@{ARC\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{request()}{request()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+\mbox{\hyperlink{structCacheResult}{Cache\+Result}}$<$ Key $>$ \mbox{\hyperlink{classARC__Cache}{ARC\+\_\+\+Cache}}$<$ Key $>$\+::request (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+ARC\+\_\+cache.\+hpp\end{DoxyCompactItemize}

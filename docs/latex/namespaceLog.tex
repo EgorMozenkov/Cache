@@ -1,0 +1,109 @@
+\doxysection{Log Namespace Reference}
+\hypertarget{namespaceLog}{}\label{namespaceLog}\index{Log@{Log}}
+
+
+Пространство имен для глобального логгера симулятора.  
+
+
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196e}{Log\+Level}} \{ \mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4cd0be82d98ca2a542adc75f2c826e5b}{ERROR}}
+, \mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{INFO}}
+, \mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea14b043f88c71e19e065b8b4e62c239f9}{TRACE}}
+, \mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{DEBUG}}
+ \}
+\begin{DoxyCompactList}\small\item\em Уровни детализации вывода в консоль. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196e}{Log\+Level}} \mbox{\hyperlink{namespaceLog_aa33bae8bff55f79e23164c957f8095b0}{set\+\_\+log\+\_\+level}} (\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196e}{Log\+Level}} level)
+\begin{DoxyCompactList}\small\item\em Устанавливает текущий порог логирования. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename ... Args$>$ }\\void \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{trace}} (\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196e}{Log\+Level}} level, const Args \&... args)
+\begin{DoxyCompactList}\small\item\em Универсальная функция потокового вывода логов. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{namespaceLog_a41af5680ba69f35bf1356fc3c90da19b}\label{namespaceLog_a41af5680ba69f35bf1356fc3c90da19b} 
+\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196e}{Log\+Level}} {\bfseries log\+\_\+level} = \mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4cd0be82d98ca2a542adc75f2c826e5b}{ERROR}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Пространство имен для глобального логгера симулятора. 
+
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196e}\label{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196e} 
+\index{Log@{Log}!LogLevel@{LogLevel}}
+\index{LogLevel@{LogLevel}!Log@{Log}}
+\doxysubsubsection{\texorpdfstring{LogLevel}{LogLevel}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196e}{Log\+::\+Log\+Level}}}
+
+
+
+Уровни детализации вывода в консоль. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ERROR@{ERROR}!Log@{Log}}\index{Log@{Log}!ERROR@{ERROR}}}\Hypertarget{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4cd0be82d98ca2a542adc75f2c826e5b}\label{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4cd0be82d98ca2a542adc75f2c826e5b} 
+ERROR&Критические ошибки (например, передача нулевого размера кэша). \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{INFO@{INFO}!Log@{Log}}\index{Log@{Log}!INFO@{INFO}}}\Hypertarget{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}\label{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8} 
+INFO&Базовая статистика (hit rate, результаты бенчмарков). \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TRACE@{TRACE}!Log@{Log}}\index{Log@{Log}!TRACE@{TRACE}}}\Hypertarget{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea14b043f88c71e19e065b8b4e62c239f9}\label{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea14b043f88c71e19e065b8b4e62c239f9} 
+TRACE&Детальная информация (состояние директорий и очередей). \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DEBUG@{DEBUG}!Log@{Log}}\index{Log@{Log}!DEBUG@{DEBUG}}}\Hypertarget{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}\label{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715} 
+DEBUG&Максимальная детализация (каждый хит/мисс, работа алгоритма). \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespaceLog_aa33bae8bff55f79e23164c957f8095b0}\label{namespaceLog_aa33bae8bff55f79e23164c957f8095b0} 
+\index{Log@{Log}!set\_log\_level@{set\_log\_level}}
+\index{set\_log\_level@{set\_log\_level}!Log@{Log}}
+\doxysubsubsection{\texorpdfstring{set\_log\_level()}{set\_log\_level()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196e}{Log\+Level}} Log\+::set\+\_\+log\+\_\+level (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196e}{Log\+Level}}}]{level }\end{DoxyParamCaption})}
+
+
+
+Устанавливает текущий порог логирования. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em level} & Желаемый уровень (сообщения с уровнем выше заданного будут игнорироваться). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Log\+Level Предыдущий уровень логирования. 
+\end{DoxyReturn}
+\Hypertarget{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}\label{namespaceLog_aeddaa2e8facc1def09231f58a724dc99} 
+\index{Log@{Log}!trace@{trace}}
+\index{trace@{trace}!Log@{Log}}
+\doxysubsubsection{\texorpdfstring{trace()}{trace()}}
+{\footnotesize\ttfamily template$<$typename ... Args$>$ \\
+void Log\+::trace (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196e}{Log\+Level}}}]{level,  }\item[{const Args \&...}]{args }\end{DoxyParamCaption})}
+
+
+
+Универсальная функция потокового вывода логов. 
+
+Использует C++17 fold expressions (выражения свертки) для безопасной распаковки произвольного количества аргументов и их вывода в std\+::cout без накладных расходов на рекурсивные вызовы шаблонов.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Args} & Пакет типов передаваемых аргументов. \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em level} & Уровень важности текущего сообщения. \\
+\hline
+{\em args} & Аргументы для вывода (текст, числа, ключи). \\
+\hline
+\end{DoxyParams}

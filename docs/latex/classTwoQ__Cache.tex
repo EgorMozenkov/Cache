@@ -1,0 +1,128 @@
+\doxysection{Two\+Q\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classTwoQ__Cache}{}\label{classTwoQ__Cache}\index{TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}}
+
+
+Алгоритм вытеснения 2Q (Two Queues).  
+
+
+
+
+{\ttfamily \#include $<$2\+Q\+\_\+cache.\+hpp$>$}
+
+
+
+Inheritance diagram for Two\+Q\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>}\+:
+% FIG 0
+
+
+Collaboration diagram for Two\+Q\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>}\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTwoQ__Cache_a1a7548a65678620b5abc07d0039ab58a}{Two\+Q\+\_\+\+Cache}} (size\+\_\+t N)
+\begin{DoxyCompactList}\small\item\em Инициализирует 2Q кэш. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structCacheResult}{Cache\+Result}}$<$ Key $>$ \mbox{\hyperlink{classTwoQ__Cache_ab4b5f567fc25e04f6b1af729149981f8}{request}} (const Key \&key) override
+\item 
+bool \mbox{\hyperlink{classTwoQ__Cache_a7afa615a3edc3dc8ee14ae85d1170976}{contains}} (const Key \&key) override
+\item 
+void \mbox{\hyperlink{classTwoQ__Cache_a045066a0283effae4c339b99bb139859}{erase}} (const Key \&key) override
+\item 
+std\+::vector$<$ Key $>$ \mbox{\hyperlink{classTwoQ__Cache_abbee0bf819bfbc493777c53ccbc3811a}{get\+\_\+elements}} () override
+\item 
+void \mbox{\hyperlink{classTwoQ__Cache_ae65403b8296c7b9f0b567119b59782b8}{read\+\_\+cache}} () override
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Key$>$\newline
+class Two\+Q\+\_\+\+Cache$<$ Key $>$}
+Алгоритм вытеснения 2Q (Two Queues). 
+
+Решает проблему уязвимости классического LRU к полному сканированию данных. Разделяет память на три независимые очереди\+: IN (для новых элементов), OUT (теневой кэш для истории вытесненных) и VIP (для часто используемых). Элемент признается "{}горячим"{} и попадает в VIP только в том случае, если повторное обращение к нему произошло, пока его ключ находился в очереди OUT. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classTwoQ__Cache_a1a7548a65678620b5abc07d0039ab58a}\label{classTwoQ__Cache_a1a7548a65678620b5abc07d0039ab58a} 
+\index{TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}!TwoQ\_Cache@{TwoQ\_Cache}}
+\index{TwoQ\_Cache@{TwoQ\_Cache}!TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{TwoQ\_Cache()}{TwoQ\_Cache()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+\mbox{\hyperlink{classTwoQ__Cache}{Two\+Q\+\_\+\+Cache}}$<$ Key $>$\mbox{\hyperlink{classTwoQ__Cache}{\+::\+Two\+Q\+\_\+\+Cache}} (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{N }\end{DoxyParamCaption})}
+
+
+
+Инициализирует 2Q кэш. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em N} & Общий объем кэша. Память автоматически делится в пропорциях\+: 25\% под очередь IN, 50\% под OUT и остаток под VIP. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em std\+::invalid\+\_\+argument} & Если размер кэша меньше или равен 3. \\
+\hline
+\end{DoxyExceptions}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classTwoQ__Cache_a7afa615a3edc3dc8ee14ae85d1170976}\label{classTwoQ__Cache_a7afa615a3edc3dc8ee14ae85d1170976} 
+\index{TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}!contains@{contains}}
+\index{contains@{contains}!TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+bool \mbox{\hyperlink{classTwoQ__Cache}{Two\+Q\+\_\+\+Cache}}$<$ Key $>$\+::contains (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classTwoQ__Cache_a045066a0283effae4c339b99bb139859}\label{classTwoQ__Cache_a045066a0283effae4c339b99bb139859} 
+\index{TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}!erase@{erase}}
+\index{erase@{erase}!TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{erase()}{erase()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+void \mbox{\hyperlink{classTwoQ__Cache}{Two\+Q\+\_\+\+Cache}}$<$ Key $>$\+::erase (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classTwoQ__Cache_abbee0bf819bfbc493777c53ccbc3811a}\label{classTwoQ__Cache_abbee0bf819bfbc493777c53ccbc3811a} 
+\index{TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}!get\_elements@{get\_elements}}
+\index{get\_elements@{get\_elements}!TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{get\_elements()}{get\_elements()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+std\+::vector$<$ Key $>$ \mbox{\hyperlink{classTwoQ__Cache}{Two\+Q\+\_\+\+Cache}}$<$ Key $>$\+::get\+\_\+elements (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classTwoQ__Cache_ae65403b8296c7b9f0b567119b59782b8}\label{classTwoQ__Cache_ae65403b8296c7b9f0b567119b59782b8} 
+\index{TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}!read\_cache@{read\_cache}}
+\index{read\_cache@{read\_cache}!TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{read\_cache()}{read\_cache()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+void \mbox{\hyperlink{classTwoQ__Cache}{Two\+Q\+\_\+\+Cache}}$<$ Key $>$\+::read\+\_\+cache (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classTwoQ__Cache_ab4b5f567fc25e04f6b1af729149981f8}\label{classTwoQ__Cache_ab4b5f567fc25e04f6b1af729149981f8} 
+\index{TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}!request@{request}}
+\index{request@{request}!TwoQ\_Cache$<$ Key $>$@{TwoQ\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{request()}{request()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+\mbox{\hyperlink{structCacheResult}{Cache\+Result}}$<$ Key $>$ \mbox{\hyperlink{classTwoQ__Cache}{Two\+Q\+\_\+\+Cache}}$<$ Key $>$\+::request (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+2\+Q\+\_\+cache.\+hpp\end{DoxyCompactItemize}

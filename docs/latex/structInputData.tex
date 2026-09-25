@@ -1,0 +1,42 @@
+\doxysection{Input\+Data\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>} Struct Template Reference}
+\hypertarget{structInputData}{}\label{structInputData}\index{InputData$<$ Key $>$@{InputData$<$ Key $>$}}
+
+
+Набор тестовых данных для прогона тестов.  
+
+
+
+
+{\ttfamily \#include $<$File\+\_\+request.\+hpp$>$}
+
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structInputData_a69ad0af8b25a276dbd357e37fb8f69a1}\label{structInputData_a69ad0af8b25a276dbd357e37fb8f69a1} 
+size\+\_\+t {\bfseries Cache\+\_\+size}
+\begin{DoxyCompactList}\small\item\em Суммарная вместимость всех уровней кэша. \end{DoxyCompactList}\item 
+\Hypertarget{structInputData_a8eeef13693dc8ef58ac78a0ac5ab43bc}\label{structInputData_a8eeef13693dc8ef58ac78a0ac5ab43bc} 
+size\+\_\+t {\bfseries num\+\_\+requests}
+\begin{DoxyCompactList}\small\item\em Общее количество запросов (длина трассы). \end{DoxyCompactList}\item 
+\Hypertarget{structInputData_acb15c26d710dfa6eca9cbbdc0259e8d2}\label{structInputData_acb15c26d710dfa6eca9cbbdc0259e8d2} 
+std\+::vector$<$ Key $>$ {\bfseries keys}
+\begin{DoxyCompactList}\small\item\em Вектор ключей, имитирующий поток обращений. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Key$>$\newline
+struct Input\+Data$<$ Key $>$}
+Набор тестовых данных для прогона тестов. 
+
+Содержит общую доступную память и саму последовательность обращений, которая будет подана на вход первому уровню кэша.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Key} & Тип данных ключа (соответствует типу кэша). \\
+\hline
+\end{DoxyTemplParams}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+File\+\_\+request.\+hpp\end{DoxyCompactItemize}

@@ -1,0 +1,110 @@
+\doxysection{Test\+\_\+multi\+\_\+level\+\_\+cache.\+hpp}
+\hypertarget{Test__multi__level__cache_8hpp_source}{}\label{Test__multi__level__cache_8hpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}LRU\_cache.hpp"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}LFU\_cache.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}2Q\_cache.hpp"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}ARC\_cache.hpp"{}}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}LIRS\_cache.hpp"{}}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}Test.hpp"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}Logger.hpp"{}}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}File\_request.hpp"{}}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ "{}Multi\_Level\_cache.hpp"{}}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00026\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>\ }
+\DoxyCodeLine{00027\ \textcolor{keywordtype}{void}\ data\_output(\mbox{\hyperlink{classMulti__Level__Cache}{Multi\_Level\_Cache<Key>}}\&\ cache,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structConfig}{Config}}\&\ conf,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structInputData}{InputData<Key>}}\&\ data)}
+\DoxyCodeLine{00028\ \{}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ HITS\ =\ 0;}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ total\_requests\ =\ 0;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{comment}{//\ Берем\ данные\ из\ структуры\ data}}
+\DoxyCodeLine{00033\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4cd0be82d98ca2a542adc75f2c826e5b}{Log::ERROR}},\ \textcolor{stringliteral}{"{}Создана\ многоуровневая\ система.\ Размер:\ "{}},\ data.\mbox{\hyperlink{structInputData_a69ad0af8b25a276dbd357e37fb8f69a1}{Cache\_size}},\ \textcolor{stringliteral}{"{},\ уровни:\ "{}},\ conf.\mbox{\hyperlink{structConfig_a55b0689b9c46a8a62ab6796b814d57e1}{levels}},\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00034\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}-\/-\/-\/\ Исходное\ состояние\ кэша\ -\/-\/-\/\(\backslash\)n"{}});}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{comment}{//cache.read\_cache();}}
+\DoxyCodeLine{00036\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}Приходят\ новые\ ключи!\(\backslash\)n"{}});}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{comment}{//\ Итерируемся\ по\ вектору\ из\ структуры\ data}}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ key\ :\ data.keys)\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Запрошен\ ключ:\ "{}},\ key,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(cache.request(key).hit)\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}-\/>\ ХИТ!\(\backslash\)n"{}});}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ HITS++;}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}-\/>\ МИСС!\(\backslash\)n"{}});}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \textcolor{comment}{//cache.read\_cache();}}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ total\_requests++;}
+\DoxyCodeLine{00051\ \ \ \ \ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}-\/-\/-\/\ Cостояние\ кэша\ после\ теста\ -\/-\/-\/\(\backslash\)n"{}});}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{comment}{//cache.read\_cache();}}
+\DoxyCodeLine{00055\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4cd0be82d98ca2a542adc75f2c826e5b}{Log::ERROR}},\ \textcolor{stringliteral}{"{}Количество\ запросов:\ "{}},\ total\_requests,\ \textcolor{stringliteral}{"{},\ Количество\ хитов:\ "{}},\ HITS,\ \textcolor{stringliteral}{"{}\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{00056\ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00070\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>\ }
+\DoxyCodeLine{00071\ \textcolor{keywordtype}{void}\ test\_multi\_level\_cache(\textcolor{keywordtype}{size\_t}\ capacity,\ \textcolor{keyword}{const}\ std::vector<std::string>\&\ algos,\ \textcolor{keyword}{const}\ std::vector<Key>\&\ keys)\ }
+\DoxyCodeLine{00072\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \mbox{\hyperlink{structConfig}{Config}}\ conf;}
+\DoxyCodeLine{00074\ \ \ \ \ conf.\mbox{\hyperlink{structConfig_ae23f9bc16cfa9a59082995817e0c5f34}{algorithms}}\ =\ algos;}
+\DoxyCodeLine{00075\ \ \ \ \ conf.\mbox{\hyperlink{structConfig_a55b0689b9c46a8a62ab6796b814d57e1}{levels}}\ =\ algos.size();}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \mbox{\hyperlink{structInputData}{InputData<Key>}}\ data;}
+\DoxyCodeLine{00078\ \ \ \ \ data.\mbox{\hyperlink{structInputData_a69ad0af8b25a276dbd357e37fb8f69a1}{Cache\_size}}\ =\ capacity;}
+\DoxyCodeLine{00079\ \ \ \ \ data.\mbox{\hyperlink{structInputData_acb15c26d710dfa6eca9cbbdc0259e8d2}{keys}}\ =\ keys;}
+\DoxyCodeLine{00080\ \ \ \ \ data.\mbox{\hyperlink{structInputData_a8eeef13693dc8ef58ac78a0ac5ab43bc}{num\_requests}}\ =\ keys.size();}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \mbox{\hyperlink{classMulti__Level__Cache}{Multi\_Level\_Cache<Key>}}\ cache(conf,\ data);}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ data\_output(cache,\ conf,\ data);}
+\DoxyCodeLine{00085\ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00097\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>\ }
+\DoxyCodeLine{00098\ \textcolor{keywordtype}{void}\ file\_test(\textcolor{keyword}{const}\ std::string\&\ filename)\ }
+\DoxyCodeLine{00099\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \mbox{\hyperlink{structConfig}{Config}}\ conf;}
+\DoxyCodeLine{00101\ \ \ \ \ \mbox{\hyperlink{structInputData}{InputData<Key>}}\ data;}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \ \ read\_file(filename,\ conf,\ data);}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordflow}{if}\ (data.\mbox{\hyperlink{structInputData_a8eeef13693dc8ef58ac78a0ac5ab43bc}{num\_requests}}\ ==\ 0)\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};\ }
+\DoxyCodeLine{00107\ \ \ \ \ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \ \ \mbox{\hyperlink{classMulti__Level__Cache}{Multi\_Level\_Cache<Key>}}\ cache(conf,\ data);}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \ \ data\_output(cache,\ conf,\ data);}
+\DoxyCodeLine{00112\ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00128\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00129\ \textcolor{keywordtype}{size\_t}\ run\_silent\_benchmark(\textcolor{keywordtype}{size\_t}\ capacity,\ \textcolor{keyword}{const}\ std::vector<std::string>\&\ algos,\ \textcolor{keyword}{const}\ std::vector<Key>\&\ keys)\ }
+\DoxyCodeLine{00130\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \mbox{\hyperlink{structConfig}{Config}}\ conf;}
+\DoxyCodeLine{00132\ \ \ \ \ conf.\mbox{\hyperlink{structConfig_ae23f9bc16cfa9a59082995817e0c5f34}{algorithms}}\ =\ algos;}
+\DoxyCodeLine{00133\ \ \ \ \ conf.\mbox{\hyperlink{structConfig_a55b0689b9c46a8a62ab6796b814d57e1}{levels}}\ =\ algos.size();}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ \mbox{\hyperlink{structInputData}{InputData<Key>}}\ data;}
+\DoxyCodeLine{00136\ \ \ \ \ data.\mbox{\hyperlink{structInputData_a69ad0af8b25a276dbd357e37fb8f69a1}{Cache\_size}}\ =\ capacity;}
+\DoxyCodeLine{00137\ \ \ \ \ data.\mbox{\hyperlink{structInputData_acb15c26d710dfa6eca9cbbdc0259e8d2}{keys}}\ =\ keys;}
+\DoxyCodeLine{00138\ \ \ \ \ data.\mbox{\hyperlink{structInputData_a8eeef13693dc8ef58ac78a0ac5ab43bc}{num\_requests}}\ =\ keys.size();}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \ \ \mbox{\hyperlink{classMulti__Level__Cache}{Multi\_Level\_Cache<Key>}}\ cache(conf,\ data);}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ HITS\ =\ 0;}
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ key\ :\ data.keys)\ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(cache.request(key).hit)\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ HITS++;}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00147\ \ \ \ \ \}}
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keywordflow}{return}\ HITS;}
+\DoxyCodeLine{00149\ \}}
+
+\end{DoxyCode}

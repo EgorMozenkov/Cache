@@ -1,0 +1,123 @@
+\doxysection{LFU\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classLFU__Cache}{}\label{classLFU__Cache}\index{LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}}
+
+
+Алгоритм вытеснения LFU (Least Frequently Used).  
+
+
+
+
+{\ttfamily \#include $<$LFU\+\_\+cache.\+hpp$>$}
+
+
+
+Inheritance diagram for LFU\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>}\+:
+% FIG 0
+
+
+Collaboration diagram for LFU\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>}\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classLFU__Cache_a92f76ee76c1b800cf101a6443d10a43b}{LFU\+\_\+\+Cache}} (size\+\_\+t N)
+\begin{DoxyCompactList}\small\item\em Инициализирует LFU кэш заданного размера. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structCacheResult}{Cache\+Result}}$<$ Key $>$ \mbox{\hyperlink{classLFU__Cache_a0cf85cdc0fc0ec9fefdefcfee0572e23}{request}} (const Key \&key) override
+\item 
+bool \mbox{\hyperlink{classLFU__Cache_a792e20b1b1cea91d0abf2e96fd2d814b}{contains}} (const Key \&key) override
+\item 
+void \mbox{\hyperlink{classLFU__Cache_ae5d4c1c3a1d1249e99003a0dc3522b70}{erase}} (const Key \&key) override
+\item 
+std\+::vector$<$ Key $>$ \mbox{\hyperlink{classLFU__Cache_a1bed12ac2739e6f659639ae75d785a40}{get\+\_\+elements}} () override
+\item 
+void \mbox{\hyperlink{classLFU__Cache_abe089f25de8dbc1b0c8c5d88b572af9c}{read\+\_\+cache}} () override
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Key$>$\newline
+class LFU\+\_\+\+Cache$<$ Key $>$}
+Алгоритм вытеснения LFU (Least Frequently Used). 
+
+Выполнен на частоте обращений к элементам. При переполнении памяти вытесняет ключ, к которому обращались реже всего. Реализован со строгой асимптотикой O(1) для всех операций за счет использования двух хэш-\/таблиц\+: одна связывает ключ с его узлом, вторая группирует ключи по частоте их использования. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classLFU__Cache_a92f76ee76c1b800cf101a6443d10a43b}\label{classLFU__Cache_a92f76ee76c1b800cf101a6443d10a43b} 
+\index{LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}!LFU\_Cache@{LFU\_Cache}}
+\index{LFU\_Cache@{LFU\_Cache}!LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{LFU\_Cache()}{LFU\_Cache()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+\mbox{\hyperlink{classLFU__Cache}{LFU\+\_\+\+Cache}}$<$ Key $>$\mbox{\hyperlink{classLFU__Cache}{\+::\+LFU\+\_\+\+Cache}} (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{N }\end{DoxyParamCaption})}
+
+
+
+Инициализирует LFU кэш заданного размера. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em N} & Максимальная вместимость кэша. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classLFU__Cache_a792e20b1b1cea91d0abf2e96fd2d814b}\label{classLFU__Cache_a792e20b1b1cea91d0abf2e96fd2d814b} 
+\index{LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}!contains@{contains}}
+\index{contains@{contains}!LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+bool \mbox{\hyperlink{classLFU__Cache}{LFU\+\_\+\+Cache}}$<$ Key $>$\+::contains (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classLFU__Cache_ae5d4c1c3a1d1249e99003a0dc3522b70}\label{classLFU__Cache_ae5d4c1c3a1d1249e99003a0dc3522b70} 
+\index{LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}!erase@{erase}}
+\index{erase@{erase}!LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{erase()}{erase()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+void \mbox{\hyperlink{classLFU__Cache}{LFU\+\_\+\+Cache}}$<$ Key $>$\+::erase (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classLFU__Cache_a1bed12ac2739e6f659639ae75d785a40}\label{classLFU__Cache_a1bed12ac2739e6f659639ae75d785a40} 
+\index{LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}!get\_elements@{get\_elements}}
+\index{get\_elements@{get\_elements}!LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{get\_elements()}{get\_elements()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+std\+::vector$<$ Key $>$ \mbox{\hyperlink{classLFU__Cache}{LFU\+\_\+\+Cache}}$<$ Key $>$\+::get\+\_\+elements (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classLFU__Cache_abe089f25de8dbc1b0c8c5d88b572af9c}\label{classLFU__Cache_abe089f25de8dbc1b0c8c5d88b572af9c} 
+\index{LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}!read\_cache@{read\_cache}}
+\index{read\_cache@{read\_cache}!LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{read\_cache()}{read\_cache()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+void \mbox{\hyperlink{classLFU__Cache}{LFU\+\_\+\+Cache}}$<$ Key $>$\+::read\+\_\+cache (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classLFU__Cache_a0cf85cdc0fc0ec9fefdefcfee0572e23}\label{classLFU__Cache_a0cf85cdc0fc0ec9fefdefcfee0572e23} 
+\index{LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}!request@{request}}
+\index{request@{request}!LFU\_Cache$<$ Key $>$@{LFU\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{request()}{request()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+\mbox{\hyperlink{structCacheResult}{Cache\+Result}}$<$ Key $>$ \mbox{\hyperlink{classLFU__Cache}{LFU\+\_\+\+Cache}}$<$ Key $>$\+::request (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+LFU\+\_\+cache.\+hpp\end{DoxyCompactItemize}

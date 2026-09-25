@@ -1,0 +1,314 @@
+\doxysection{ARC\+\_\+cache.\+hpp}
+\hypertarget{ARC__cache_8hpp_source}{}\label{ARC__cache_8hpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <list>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}I\_cache.hpp"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}Logger.hpp"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00017\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00018\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classARC__Cache}{ARC\_Cache}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classICache}{ICache}}<Key>\ \{}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keyword}{using\ }IT\ =\ \textcolor{keyword}{typename}\ std::list<Key>::iterator;}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keyword}{enum\ class}\ QueueType\ \{}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ MFU,\ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ MRU,\ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ MFU\_ghost,\ \ \ \ \ \ }
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ MRU\_ghost,\ \ \ \ \ \ }
+\DoxyCodeLine{00027\ \ \ \ \ \};}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{struct\ }ItemInfo\ \{}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ QueueType\ type;}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ IT\ list\_it;}
+\DoxyCodeLine{00032\ \ \ \ \ \};}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ std::unordered\_map<Key,\ ItemInfo>\ ARC\_map;}
+\DoxyCodeLine{00037\ \ \ \ \ std::list<Key>\ MFU\_list,\ MRU\_list,\ MFU\_ghost\_list,\ MRU\_ghost\_list;}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ capacity;}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ p;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{void}\ replace\ (\textcolor{keyword}{const}\ Key\&\ key,\ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\&\ result);}
+\DoxyCodeLine{00052\ \ \ \ \ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00054\ \ \ \ \ }
+\DoxyCodeLine{00061\ \ \ \ \ \mbox{\hyperlink{classARC__Cache}{ARC\_Cache}}\ (\textcolor{keywordtype}{size\_t}\ N);}
+\DoxyCodeLine{00062\ \ \ \ \ }
+\DoxyCodeLine{00063\ \ \ \ \ }
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ request(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{bool}\ contains(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{void}\ erase(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00067\ \ \ \ \ std::vector<Key>\ get\_elements()\ \textcolor{keyword}{override};\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{void}\ read\_cache()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00069\ \};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00072\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classARC__Cache}{ARC\_Cache<Key>::replace}}(\textcolor{keyword}{const}\ Key\&\ key,\ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\&\ result)}
+\DoxyCodeLine{00073\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ ARC\_map.find(key);}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{bool}\ is\_mfu\_ghost\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ ARC\_map.end()\ \&\&\ it-\/>second.type\ ==\ QueueType::MFU\_ghost)\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ is\_mfu\_ghost\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00080\ \ \ \ \ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordflow}{if}\ (MRU\_list.size()\ >\ p\ ||\ (is\_mfu\_ghost\ \&\&\ MRU\_list.size()\ ==\ p\ \&\&\ p\ >\ 0)\ )\ \{}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}Размер\ MRU\ больше\ динамического\ размера\ p.\ Удаляем\ элемент\ из\ MRU\ и\ добавляем\ ключ\ в\ MRU\_ghost\(\backslash\)n"{}});}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ Key\ value\_1\ =\ MRU\_list.back();}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ MRU\_list.pop\_back();}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ MRU\_ghost\_list.push\_front(value\_1);}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ ARC\_map[value\_1]\ =\ \{QueueType::MRU\_ghost,\ MRU\_ghost\_list.begin()\};}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ result.has\_evicted\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ result.evicted\_key\ =\ value\_1;}
+\DoxyCodeLine{00094\ \ \ \ \ \}}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (MFU\_list.size()\ >\ 0)\ \{}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}Удаляем\ элемент\ из\ MFU\ и\ добавляем\ ключ\ в\ MFU\_ghost\(\backslash\)n"{}});}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ Key\ value\_2\ =\ MFU\_list.back();}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ MFU\_list.pop\_back();}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ MFU\_ghost\_list.push\_front(value\_2);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ ARC\_map[value\_2]\ =\ \{QueueType::MFU\_ghost,\ MFU\_ghost\_list.begin()\};}
+\DoxyCodeLine{00104\ \ \ \ \ }
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ result.has\_evicted\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ result.evicted\_key\ =\ value\_2;}
+\DoxyCodeLine{00107\ \ \ \ \ \}}
+\DoxyCodeLine{00108\ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00112\ \mbox{\hyperlink{classARC__Cache_adb21b23a80d1d7c0cac4942d8d6254a4}{ARC\_Cache<Key>::ARC\_Cache}}(\textcolor{keywordtype}{size\_t}\ N)}
+\DoxyCodeLine{00113\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordflow}{if}\ (N\ <=\ 4)\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Ошибка:\ Размер\ кэша\ ARC\ должен\ быть\ больше\ 4."{}});}
+\DoxyCodeLine{00116\ \ \ \ \ \}}
+\DoxyCodeLine{00117\ \ \ \ \ }
+\DoxyCodeLine{00118\ \ \ \ \ capacity\ =\ N;}
+\DoxyCodeLine{00119\ \ \ \ \ p\ =\ 0;}
+\DoxyCodeLine{00120\ \}}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00123\ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ \mbox{\hyperlink{classARC__Cache}{ARC\_Cache<Key>::request}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00124\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ ARC\_map.find(key);}
+\DoxyCodeLine{00126\ \ \ \ \ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ result\ =\ \{\textcolor{keyword}{false},\ \textcolor{keyword}{false},\ Key\{\}\};}
+\DoxyCodeLine{00127\ \ \ \ \ }
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{comment}{//\ Ключ\ найден\ в\ хэш\ таблицe}}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ ARC\_map.end())\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Нашли\ в\ MRU}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it-\/>second.type\ ==\ QueueType::MRU)\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}ХИТ:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ в\ MRU,\ переносим\ его\ в\ начало\ MFU\(\backslash\)n"{}});}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ MRU\_list.erase\ (it-\/>second.list\_it);}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ MFU\_list.push\_front(key);}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.type\ =\ QueueType::MFU;}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.list\_it\ =\ MFU\_list.begin();}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ result.hit\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Нашли\ в\ MFU}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it-\/>second.type\ ==\ QueueType::MFU)\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}ХИТ:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ в\ MFU,\ переносим\ его\ в\ начало\ MFU\(\backslash\)n"{}});}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ MFU\_list.splice(MFU\_list.begin(),\ MFU\_list,\ it-\/>second.list\_it);}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ result.hit\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Нашли\ в\ MFU\_ghost}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it-\/>second.type\ ==\ QueueType::MFU\_ghost)\ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}МИСС:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ ключ\ найден\ в\ MFU\_ghost\(\backslash\)n"{}});}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ delta\ =\ 0;}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (MFU\_ghost\_list.size()\ >=\ MRU\_ghost\_list.size())\ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ delta\ =\ 1;}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ delta\ =\ MRU\_ghost\_list.size()\ /\ MFU\_ghost\_list.size();\ }
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p\ >\ delta)\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p\ =\ std::min(capacity,\ p\ -\/\ delta);}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p\ =\ 0;}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ replace(key,\ result);}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ MFU\_ghost\_list.erase\ (it-\/>second.list\_it);}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ MFU\_list.push\_front(key);}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.type\ =\ QueueType::MFU;}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.list\_it\ =\ MFU\_list.begin();}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \textcolor{comment}{//Нашли\ в\ MRU\_ghost}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it-\/>second.type\ ==\ QueueType::MRU\_ghost)\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}МИСС:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ ключ\ найден\ в\ MRU\_ghost\(\backslash\)n"{}});}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ delta\ =\ 0;}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (MRU\_ghost\_list.size()\ >=\ MFU\_ghost\_list.size())\ \{}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ delta\ =\ 1;}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ delta\ =\ MFU\_ghost\_list.size()\ /\ MRU\_ghost\_list.size();\ }
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ p\ =\ std::min(capacity,\ p\ +\ delta);}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ replace(key,\ result);}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ MRU\_ghost\_list.erase\ (it-\/>second.list\_it);}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ MFU\_list.push\_front(key);}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ ARC\_map[key]\ =\ \{QueueType::MFU,\ MFU\_list.begin()\};}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00211\ \ \ \ \ \}}
+\DoxyCodeLine{00212\ \ \ \ \ }
+\DoxyCodeLine{00213\ \ \ \ \ \textcolor{comment}{//\ Ключа\ нет\ в\ хэш-\/таблице}}
+\DoxyCodeLine{00214\ \ \ \ \ }
+\DoxyCodeLine{00215\ \ \ \ \ \textcolor{keywordflow}{if}\ (MRU\_list.size()\ +\ MRU\_ghost\_list.size()\ ==\ capacity)\ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (MRU\_list.size()\ <\ capacity)\ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Удаляем\ самого\ старого\ из\ MRU\_ghost}}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ ARC\_map.erase(MRU\_ghost\_list.back());}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ MRU\_ghost\_list.pop\_back();}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ в\ MRU\_ghost\ его\ нет}}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ result.has\_evicted\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ result.evicted\_key\ =\ MRU\_list.back();}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ ARC\_map.erase(MRU\_list.back());}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ MRU\_list.pop\_back();}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00231\ \ \ \ \ \}\ }
+\DoxyCodeLine{00232\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (MRU\_list.size()\ +\ MFU\_list.size()\ +\ MRU\_ghost\_list.size()\ +\ MFU\_ghost\_list.size()\ ==\ 2\ *\ capacity)\ \{}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ ARC\_map.erase(MFU\_ghost\_list.back());}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ MFU\_ghost\_list.pop\_back();}
+\DoxyCodeLine{00235\ \ \ \ \ \}}
+\DoxyCodeLine{00236\ \ \ \ \ }
+\DoxyCodeLine{00237\ \ \ \ \ }
+\DoxyCodeLine{00238\ \ \ \ \ \textcolor{keywordflow}{if}\ (MRU\_list.size()\ +\ MFU\_list.size()\ >=\ capacity)\ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ replace(key,\ result);}
+\DoxyCodeLine{00240\ \ \ \ \ \}}
+\DoxyCodeLine{00241\ \ \ \ \ }
+\DoxyCodeLine{00242\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea14b043f88c71e19e065b8b4e62c239f9}{Log::TRACE}},\ \textcolor{stringliteral}{"{}МИСС:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ не\ найден\ и\ добавлен\ в\ MRU\(\backslash\)n"{}});}
+\DoxyCodeLine{00243\ \ \ \ \ MRU\_list.push\_front(key);}
+\DoxyCodeLine{00244\ \ \ \ \ ARC\_map[key]\ =\ \{QueueType::MRU,\ MRU\_list.begin()\};}
+\DoxyCodeLine{00245\ \ \ \ \ }
+\DoxyCodeLine{00246\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00247\ \}}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00249\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00250\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classARC__Cache}{ARC\_Cache<Key>::contains}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00251\ \{}
+\DoxyCodeLine{00252\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ ARC\_map.find(key);}
+\DoxyCodeLine{00253\ \ \ \ \ }
+\DoxyCodeLine{00254\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ ==\ ARC\_map.end())\ \{}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00256\ \ \ \ \ \}}
+\DoxyCodeLine{00257\ }
+\DoxyCodeLine{00258\ \ \ \ \ \textcolor{keywordflow}{if}\ (it-\/>second.type\ ==\ QueueType::MFU\ ||\ it-\/>second.type\ ==\ QueueType::MRU)\ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00260\ \ \ \ \ \}}
+\DoxyCodeLine{00261\ \ \ \ \ }
+\DoxyCodeLine{00262\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00263\ \}}
+\DoxyCodeLine{00264\ }
+\DoxyCodeLine{00265\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00266\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classARC__Cache}{ARC\_Cache<Key>::erase}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00267\ \{}
+\DoxyCodeLine{00268\ \ \ \ \ \textcolor{keyword}{auto}\ it\_map\ =\ ARC\_map.find(key);}
+\DoxyCodeLine{00269\ \ \ \ \ }
+\DoxyCodeLine{00270\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\_map\ !=\ ARC\_map.end())\ \{}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(it\_map-\/>second.type\ ==\ QueueType::MFU)\ \{}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ MFU\_list.erase(it\_map-\/>second.list\_it);}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(it\_map-\/>second.type\ ==\ QueueType::MRU)\ \{}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ MRU\_list.erase(it\_map-\/>second.list\_it);}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(it\_map-\/>second.type\ ==\ QueueType::MFU\_ghost)\ \{}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ MFU\_ghost\_list.erase(it\_map-\/>second.list\_it);}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(it\_map-\/>second.type\ ==\ QueueType::MRU\_ghost)\ \{}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ MRU\_ghost\_list.erase(it\_map-\/>second.list\_it);}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ ARC\_map.erase(it\_map);}
+\DoxyCodeLine{00286\ \ \ \ \ \}}
+\DoxyCodeLine{00287\ \}}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00289\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00290\ std::vector<Key>\ \mbox{\hyperlink{classARC__Cache}{ARC\_Cache<Key>::get\_elements}}()}
+\DoxyCodeLine{00291\ \{}
+\DoxyCodeLine{00292\ \ \ \ \ std::vector<Key>\ result;}
+\DoxyCodeLine{00293\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ value\ :\ MFU\_list)\ \{}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ result.push\_back(value);}
+\DoxyCodeLine{00295\ \ \ \ \ \}}
+\DoxyCodeLine{00296\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ value\ :\ MRU\_list)\ \{}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ result.push\_back(value);}
+\DoxyCodeLine{00298\ \ \ \ \ \}}
+\DoxyCodeLine{00299\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00300\ \}}
+\DoxyCodeLine{00301\ }
+\DoxyCodeLine{00302\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00303\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classARC__Cache}{ARC\_Cache<Key>::read\_cache}}()}
+\DoxyCodeLine{00304\ \{}
+\DoxyCodeLine{00305\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Динамический\ размер\ p:\ "{}},\ p,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00306\ \ \ \ \ }
+\DoxyCodeLine{00307\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Начало\ кэша\ |\ \ "{}});}
+\DoxyCodeLine{00308\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Начало\ MFU\ |\ \ "{}});}
+\DoxyCodeLine{00309\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ value\ :\ MFU\_list)\ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ value,\ \textcolor{stringliteral}{"{}\ |\ \ "{}});}
+\DoxyCodeLine{00311\ \ \ \ \ \}}
+\DoxyCodeLine{00312\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Начало\ MRU\ |\ \ "{}});}
+\DoxyCodeLine{00313\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ value\ :\ MRU\_list)\ \{}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ value,\ \textcolor{stringliteral}{"{}\ |\ \ "{}});}
+\DoxyCodeLine{00315\ \ \ \ \ \}}
+\DoxyCodeLine{00316\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Конец\ кэша\ |\(\backslash\)n"{}});}
+\DoxyCodeLine{00317\ \ \ \ \ }
+\DoxyCodeLine{00318\ \ \ \ \ \textcolor{comment}{//\ Запись\ призрачной\ части}}
+\DoxyCodeLine{00319\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}Запись\ призрачной\ части\(\backslash\)n"{}});}
+\DoxyCodeLine{00320\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}MFU\_ghost\ |\ \ "{}});}
+\DoxyCodeLine{00321\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ value\ :\ MFU\_ghost\_list)\ \{}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ value,\ \textcolor{stringliteral}{"{}\ |\ \ "{}});}
+\DoxyCodeLine{00323\ \ \ \ \ \}}
+\DoxyCodeLine{00324\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00325\ \ \ \ \ }
+\DoxyCodeLine{00326\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}MRU\_ghost\ |\ \ "{}});}
+\DoxyCodeLine{00327\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ value\ :\ MRU\_ghost\_list)\ \{}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ value,\ \textcolor{stringliteral}{"{}\ |\ \ "{}});}
+\DoxyCodeLine{00329\ \ \ \ \ \}}
+\DoxyCodeLine{00330\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00331\ \}}
+
+\end{DoxyCode}

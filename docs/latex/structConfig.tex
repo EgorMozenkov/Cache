@@ -1,0 +1,30 @@
+\doxysection{Config Struct Reference}
+\hypertarget{structConfig}{}\label{structConfig}\index{Config@{Config}}
+
+
+Конфигурация многоуровневого каскада кэшей.  
+
+
+
+
+{\ttfamily \#include $<$File\+\_\+request.\+hpp$>$}
+
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structConfig_a55b0689b9c46a8a62ab6796b814d57e1}\label{structConfig_a55b0689b9c46a8a62ab6796b814d57e1} 
+size\+\_\+t {\bfseries levels}
+\begin{DoxyCompactList}\small\item\em Количество уровней кэша (например, 2 для L1-\/\texorpdfstring{$>$}{>}L2). \end{DoxyCompactList}\item 
+\Hypertarget{structConfig_ae23f9bc16cfa9a59082995817e0c5f34}\label{structConfig_ae23f9bc16cfa9a59082995817e0c5f34} 
+std\+::vector$<$ std\+::string $>$ {\bfseries algorithms}
+\begin{DoxyCompactList}\small\item\em Названия алгоритмов по уровням (например, \{"{}\+LFU"{}, "{}\+ARC"{}\}). \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Конфигурация многоуровневого каскада кэшей. 
+
+Хранит архитектурные настройки, считанные из файла или переданные генератором. Определяет глубину системы и алгоритм для каждого уровня. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+File\+\_\+request.\+hpp\end{DoxyCompactItemize}

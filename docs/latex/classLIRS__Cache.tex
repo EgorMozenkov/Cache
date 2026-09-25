@@ -1,0 +1,125 @@
+\doxysection{LIRS\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classLIRS__Cache}{}\label{classLIRS__Cache}\index{LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}}
+
+
+Алгоритм вытеснения LIRS (Low Inter-\/reference Recurrence Set).  
+
+
+
+
+{\ttfamily \#include $<$LIRS\+\_\+cache.\+hpp$>$}
+
+
+
+Inheritance diagram for LIRS\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>}\+:
+% FIG 0
+
+
+Collaboration diagram for LIRS\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>}\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classLIRS__Cache_a861af6a87f42ed35539188d26f78c5ac}{LIRS\+\_\+\+Cache}} (size\+\_\+t N)
+\begin{DoxyCompactList}\small\item\em Инициализирует LIRS кэш. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structCacheResult}{Cache\+Result}}$<$ Key $>$ \mbox{\hyperlink{classLIRS__Cache_aad335bc88099b48109be80d31963e239}{request}} (const Key \&key) override
+\item 
+bool \mbox{\hyperlink{classLIRS__Cache_abe1b2d94d0812c7496851cb22ef10e9f}{contains}} (const Key \&key) override
+\item 
+void \mbox{\hyperlink{classLIRS__Cache_a43462c95b12acd89cbfc384d02cd4b7f}{erase}} (const Key \&key) override
+\item 
+std\+::vector$<$ Key $>$ \mbox{\hyperlink{classLIRS__Cache_a975e133c0c2e73b5bb53e665d33e191d}{get\+\_\+elements}} () override
+\item 
+void \mbox{\hyperlink{classLIRS__Cache_a8ba7de9ca6f19a222d6e15c3b3845a92}{read\+\_\+cache}} () override
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Key$>$\newline
+class LIRS\+\_\+\+Cache$<$ Key $>$}
+Алгоритм вытеснения LIRS (Low Inter-\/reference Recurrence Set). 
+
+Оценивает полезность элемента не по времени последнего обращения, а по дистанции между двумя последними обращениями (IRR). Данные делятся на LIR-\/блоки (элементы с маленькой дистанцией повторного обращения, 99\% памяти) и HIR-\/блоки (остальные элементы, к которым мы имеем ключ, 1\% памяти).
+
+Реализован со строгой асимптотикой O(1) для всех операций за счет связки хэш-\/таблицы (std\+::unordered\+\_\+map) и двух двусвязных списков (std\+::list)\+: стека S (хранит историю обращений для расчета IRR, включая "{}призраков"{}) и очереди Q (управляет вытеснением резидентных блоков). 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classLIRS__Cache_a861af6a87f42ed35539188d26f78c5ac}\label{classLIRS__Cache_a861af6a87f42ed35539188d26f78c5ac} 
+\index{LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}!LIRS\_Cache@{LIRS\_Cache}}
+\index{LIRS\_Cache@{LIRS\_Cache}!LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{LIRS\_Cache()}{LIRS\_Cache()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+\mbox{\hyperlink{classLIRS__Cache}{LIRS\+\_\+\+Cache}}$<$ Key $>$\mbox{\hyperlink{classLIRS__Cache}{\+::\+LIRS\+\_\+\+Cache}} (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{N }\end{DoxyParamCaption})}
+
+
+
+Инициализирует LIRS кэш. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em N} & Общий объем памяти. Автоматически выделяет 99\% под LIR и HIR-\/блоки. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classLIRS__Cache_abe1b2d94d0812c7496851cb22ef10e9f}\label{classLIRS__Cache_abe1b2d94d0812c7496851cb22ef10e9f} 
+\index{LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}!contains@{contains}}
+\index{contains@{contains}!LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+bool \mbox{\hyperlink{classLIRS__Cache}{LIRS\+\_\+\+Cache}}$<$ Key $>$\+::contains (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classLIRS__Cache_a43462c95b12acd89cbfc384d02cd4b7f}\label{classLIRS__Cache_a43462c95b12acd89cbfc384d02cd4b7f} 
+\index{LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}!erase@{erase}}
+\index{erase@{erase}!LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{erase()}{erase()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+void \mbox{\hyperlink{classLIRS__Cache}{LIRS\+\_\+\+Cache}}$<$ Key $>$\+::erase (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classLIRS__Cache_a975e133c0c2e73b5bb53e665d33e191d}\label{classLIRS__Cache_a975e133c0c2e73b5bb53e665d33e191d} 
+\index{LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}!get\_elements@{get\_elements}}
+\index{get\_elements@{get\_elements}!LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{get\_elements()}{get\_elements()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+std\+::vector$<$ Key $>$ \mbox{\hyperlink{classLIRS__Cache}{LIRS\+\_\+\+Cache}}$<$ Key $>$\+::get\+\_\+elements (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classLIRS__Cache_a8ba7de9ca6f19a222d6e15c3b3845a92}\label{classLIRS__Cache_a8ba7de9ca6f19a222d6e15c3b3845a92} 
+\index{LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}!read\_cache@{read\_cache}}
+\index{read\_cache@{read\_cache}!LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{read\_cache()}{read\_cache()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+void \mbox{\hyperlink{classLIRS__Cache}{LIRS\+\_\+\+Cache}}$<$ Key $>$\+::read\+\_\+cache (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classLIRS__Cache_aad335bc88099b48109be80d31963e239}\label{classLIRS__Cache_aad335bc88099b48109be80d31963e239} 
+\index{LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}!request@{request}}
+\index{request@{request}!LIRS\_Cache$<$ Key $>$@{LIRS\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{request()}{request()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+\mbox{\hyperlink{structCacheResult}{Cache\+Result}}$<$ Key $>$ \mbox{\hyperlink{classLIRS__Cache}{LIRS\+\_\+\+Cache}}$<$ Key $>$\+::request (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+LIRS\+\_\+cache.\+hpp\end{DoxyCompactItemize}

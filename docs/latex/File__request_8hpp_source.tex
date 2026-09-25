@@ -1,0 +1,58 @@
+\doxysection{File\+\_\+request.\+hpp}
+\hypertarget{File__request_8hpp_source}{}\label{File__request_8hpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}Logger.hpp"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structConfig}{Config}}\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{structConfig_a55b0689b9c46a8a62ab6796b814d57e1}{levels}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00017\ \ \ \ \ std::vector<std::string>\ \mbox{\hyperlink{structConfig_ae23f9bc16cfa9a59082995817e0c5f34}{algorithms}};\ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00018\ \};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00030\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structInputData}{InputData}}\ \{}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{structInputData_a69ad0af8b25a276dbd357e37fb8f69a1}{Cache\_size}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{structInputData_a8eeef13693dc8ef58ac78a0ac5ab43bc}{num\_requests}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00033\ \ \ \ \ std::vector<Key>\ \mbox{\hyperlink{structInputData_acb15c26d710dfa6eca9cbbdc0259e8d2}{keys}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00034\ \};}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00039\ \textcolor{keywordtype}{void}\ read\_file(\textcolor{keyword}{const}\ std::string\&\ filename,\ \mbox{\hyperlink{structConfig}{Config}}\&\ conf,\ \mbox{\hyperlink{structInputData}{InputData<Key>}}\&\ data)}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ std::ifstream\ file(filename);}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordflow}{if}\ (!file.is\_open())\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Ошибка:\ не\ удалось\ открыть\ файл!"{}}\ <<\ \textcolor{charliteral}{'\(\backslash\)n'};}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00046\ \ \ \ \ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \ \ file\ >>\ conf.\mbox{\hyperlink{structConfig_a55b0689b9c46a8a62ab6796b814d57e1}{levels}};}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ conf.\mbox{\hyperlink{structConfig_a55b0689b9c46a8a62ab6796b814d57e1}{levels}};\ i++)\ \{}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ std::string\ str\_file;}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ file\ >>\ str\_file;}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ conf.\mbox{\hyperlink{structConfig_ae23f9bc16cfa9a59082995817e0c5f34}{algorithms}}.push\_back(str\_file);}
+\DoxyCodeLine{00054\ \ \ \ \ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ file\ >>\ data.\mbox{\hyperlink{structInputData_a69ad0af8b25a276dbd357e37fb8f69a1}{Cache\_size}}\ >>\ data.\mbox{\hyperlink{structInputData_a8eeef13693dc8ef58ac78a0ac5ab43bc}{num\_requests}};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ data.\mbox{\hyperlink{structInputData_a8eeef13693dc8ef58ac78a0ac5ab43bc}{num\_requests}};\ i++)\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ Key\ temp\_key;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ file\ >>\ temp\_key;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ data.\mbox{\hyperlink{structInputData_acb15c26d710dfa6eca9cbbdc0259e8d2}{keys}}.push\_back(temp\_key);\ \ }
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}Прочитан\ ключ:\ "{}},\ temp\_key,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00064\ \ \ \ \ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ file.close();}
+\DoxyCodeLine{00067\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,35 @@
+\doxysection{Cache\+Result\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>} Struct Template Reference}
+\hypertarget{structCacheResult}{}\label{structCacheResult}\index{CacheResult$<$ Key $>$@{CacheResult$<$ Key $>$}}
+
+
+Базовый интерфейс для всех алгоритмов кэша.  
+
+
+
+
+{\ttfamily \#include $<$I\+\_\+cache.\+hpp$>$}
+
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structCacheResult_a433a96a8361cfece5763b7b1e91a9bfd}\label{structCacheResult_a433a96a8361cfece5763b7b1e91a9bfd} 
+bool {\bfseries hit}
+\item 
+\Hypertarget{structCacheResult_a2528dec8cb496009a4822f354aa87ca7}\label{structCacheResult_a2528dec8cb496009a4822f354aa87ca7} 
+bool {\bfseries has\+\_\+evicted}
+\item 
+\Hypertarget{structCacheResult_a7abc0451148b0e8ee20e367b2b94d42a}\label{structCacheResult_a7abc0451148b0e8ee20e367b2b94d42a} 
+Key {\bfseries evicted\+\_\+key}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Key$>$\newline
+struct Cache\+Result$<$ Key $>$}
+Базовый интерфейс для всех алгоритмов кэша. 
+
+Задает единый стандарт для обработки запросов. Позволяет создать любой алгоритм (LRU, LFU, ARC, LIRS) и прозрачно связывать их в многоуровневые системы (L0 -\/\texorpdfstring{$>$}{>} L1 -\/\texorpdfstring{$>$}{>} L2), где промахи верхнего уровня передаются на нижний. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+I\+\_\+cache.\+hpp\end{DoxyCompactItemize}

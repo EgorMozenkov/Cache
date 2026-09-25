@@ -1,0 +1,321 @@
+\doxysection{LIRS\+\_\+cache.\+hpp}
+\hypertarget{LIRS__cache_8hpp_source}{}\label{LIRS__cache_8hpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <list>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}I\_cache.hpp"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}Logger.hpp"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00025\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classLIRS__Cache}{LIRS\_Cache}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classICache}{ICache}}<Key>\ \{}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{using\ }IT\ =\ \textcolor{keyword}{typename}\ std::list<Key>::iterator;}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{enum\ class}\ QueueType\ \{}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ LIR,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ HIR\_RESIDENT,\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ HIR\_NO\_RESIDENT\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00033\ \ \ \ \ \};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keyword}{struct\ }ItemInfo\ \{}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ QueueType\ type;}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ IT\ it\_S;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ IT\ it\_Q;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ is\_in\_S;}
+\DoxyCodeLine{00040\ \ \ \ \ \};}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \ \ std::unordered\_map<Key,\ ItemInfo>\ LIRS\_map;}
+\DoxyCodeLine{00045\ \ \ \ \ std::list<Key>\ LIRS\_list\_S,\ LIRS\_list\_Q;}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ capacity,\ LIR\_capacity;}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count\_LIR;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{void}\ prune\ ();}
+\DoxyCodeLine{00057\ \ \ \ \ }
+\DoxyCodeLine{00058\ \ \ \ \ }
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{void}\ demote\_LIR();}
+\DoxyCodeLine{00067\ \ \ \ \ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00069\ \ \ \ \ }
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00075\ \ \ \ \ \mbox{\hyperlink{classLIRS__Cache}{LIRS\_Cache}}\ (\textcolor{keywordtype}{size\_t}\ N);}
+\DoxyCodeLine{00076\ \ \ \ \ }
+\DoxyCodeLine{00077\ \ \ \ \ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ request(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordtype}{bool}\ contains(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordtype}{void}\ erase(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00080\ \ \ \ \ std::vector<Key>\ get\_elements()\ \textcolor{keyword}{override};\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordtype}{void}\ read\_cache()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00082\ \};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00086\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classLIRS__Cache}{LIRS\_Cache<Key>::prune}}()}
+\DoxyCodeLine{00087\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}Начало\ работы\ \ функции\ для\ частки\ дна\ стека\ S"{}});}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{while}\ (!LIRS\_list\_S.empty())\ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ Key\ key\_last\ =\ LIRS\_list\_S.back();}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ last\_it\ =\ LIRS\_map.find(key\_last);}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (last\_it-\/>second.type\ ==\ QueueType::LIR)\ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}В\ стеке\ S\ последний\ элемент\ из\ LIR,\ значит\ ничего\ не\ удаляем"{}});}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ last\_it-\/>second.is\_in\_S\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (last\_it-\/>second.type\ ==\ QueueType::HIR\_NO\_RESIDENT)\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}В\ стеке\ S\ последний\ элемент\ из\ HIR\_NO\_RESIDENT,\ значит\ удаляем\ его\ из\ очереди\ Q"{}});}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_map.erase(last\_it);}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}В\ стеке\ S\ последний\ элемент\ не\ из\ LIR,\ значит\ удаляем\ его\ из\ стека\ S"{}});}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ LIRS\_list\_S.pop\_back();}
+\DoxyCodeLine{00109\ \ \ \ \ \}}
+\DoxyCodeLine{00110\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}Конец\ работы\ функции\ для\ частки\ дна\ стека\ S"{}});}
+\DoxyCodeLine{00111\ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00114\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classLIRS__Cache}{LIRS\_Cache<Key>::demote\_LIR}}()}
+\DoxyCodeLine{00115\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00116\ \ \ \ \ Key\ it\_LIR\_last\_in\_S\ =\ LIRS\_list\_S.back();}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keyword}{auto}\ it\_map\_last\_LIR\ =\ LIRS\_map.find(it\_LIR\_last\_in\_S);}
+\DoxyCodeLine{00118\ \ \ \ \ }
+\DoxyCodeLine{00119\ \ \ \ \ it\_map\_last\_LIR-\/>second.type\ =\ QueueType::HIR\_RESIDENT;}
+\DoxyCodeLine{00120\ \ \ \ \ it\_map\_last\_LIR-\/>second.is\_in\_S\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00121\ \ \ \ \ LIRS\_list\_S.pop\_back();}
+\DoxyCodeLine{00122\ \ \ \ \ LIRS\_list\_Q.push\_front(it\_map\_last\_LIR-\/>first);}
+\DoxyCodeLine{00123\ \ \ \ \ it\_map\_last\_LIR-\/>second.it\_Q\ =\ LIRS\_list\_Q.begin();}
+\DoxyCodeLine{00124\ \ \ \ \ prune();}
+\DoxyCodeLine{00125\ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00129\ \mbox{\hyperlink{classLIRS__Cache_a861af6a87f42ed35539188d26f78c5ac}{LIRS\_Cache<Key>::LIRS\_Cache}}(\textcolor{keywordtype}{size\_t}\ N)}
+\DoxyCodeLine{00130\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ capacity\ =\ N;}
+\DoxyCodeLine{00132\ \ \ \ \ count\_LIR\ =\ 0;}
+\DoxyCodeLine{00133\ \ \ \ \ LIR\_capacity\ =\ (N\ *\ 99)\ /\ 100;}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{if}(LIR\_capacity\ ==\ 0)\ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ LIR\_capacity\ =\ 1;}
+\DoxyCodeLine{00136\ \ \ \ \ \}}
+\DoxyCodeLine{00137\ \ \ \ \ }
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keywordflow}{if}(LIR\_capacity\ ==\ capacity)\ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ LIR\_capacity\ =\ N\ -\/\ 1;}
+\DoxyCodeLine{00140\ \ \ \ \ \}}
+\DoxyCodeLine{00141\ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00144\ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ \mbox{\hyperlink{classLIRS__Cache}{LIRS\_Cache<Key>::request}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00145\ \{}
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ LIRS\_map.find(key);}
+\DoxyCodeLine{00147\ \ \ \ \ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ result\ =\ \{\textcolor{keyword}{false},\ \textcolor{keyword}{false},\ Key\{\}\};}
+\DoxyCodeLine{00148\ \ \ \ \ }
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{comment}{//\ Ключ\ найден\ в\ хэш-\/табллице}}
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ LIRS\_map.end())\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Ключ\ найден\ в\ LIR}}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(it-\/>second.type\ ==\ QueueType::LIR)\ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}ХИТ:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ найден\ в\ LIR,\ переносим\ в\ начало\(\backslash\)n"{}});}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_S.erase(it-\/>second.it\_S);}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_S.push\_front(key);}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.it\_S\ =\ LIRS\_list\_S.begin();}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ prune();}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ result.hit\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Кдюч\ найден\ в\ HIR\_RESIDENT}}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(it-\/>second.type\ ==\ QueueType::HIR\_RESIDENT)\ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}ХИТ:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ найден\ в\ HIR,\ переносим\ в\ начало\(\backslash\)n"{}});}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ in\_stack\ =\ it-\/>second.is\_in\_S;}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (in\_stack)\ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_S.erase(it-\/>second.it\_S);}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_S.push\_front(key);}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.it\_S\ =\ LIRS\_list\_S.begin();}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.is\_in\_S\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (in\_stack)\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_Q.erase(it-\/>second.it\_Q);}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.type\ =\ QueueType::LIR;}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ demote\_LIR();}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_Q.erase(it-\/>second.it\_Q);}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_Q.push\_front(it-\/>first);}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.it\_Q\ =\ LIRS\_list\_Q.begin();}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ result.hit\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Ключ\ найден\ в\ HIR\_NO\_RESIDENT}}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(it-\/>second.type\ ==\ QueueType::HIR\_NO\_RESIDENT)\ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}МИСС:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ найден\ в\ призраке\ HIR\(\backslash\)n"{}});}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ in\_stack\ =\ it-\/>second.is\_in\_S;}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (in\_stack)\ \{}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_S.erase(it-\/>second.it\_S);}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_S.push\_front(key);}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.it\_S\ =\ LIRS\_list\_S.begin();}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.is\_in\_S\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (in\_stack)\ \{}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.type\ =\ QueueType::LIR;}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ demote\_LIR();}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_Q.push\_front(it-\/>first);}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>second.it\_Q\ =\ LIRS\_list\_Q.begin();}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00225\ \ \ \ \ \}}
+\DoxyCodeLine{00226\ \ \ \ \ }
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{comment}{//Ключ\ не\ найден\ в\ хэш-\/таблице}}
+\DoxyCodeLine{00228\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}МИСС:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ не\ найден\ и\ добавлен\ в\ HIR\(\backslash\)n"{}});}
+\DoxyCodeLine{00229\ \ \ \ \ }
+\DoxyCodeLine{00230\ \ \ \ \ \textcolor{keywordflow}{if}\ (count\_LIR\ <\ LIR\_capacity)\ \{}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ LIRS\_list\_S.push\_front(key);}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ LIRS\_map[key]\ =\ \{QueueType::LIR,\ LIRS\_list\_S.begin(),\ LIRS\_list\_Q.end(),\ \textcolor{keyword}{true}\};}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ count\_LIR++;}
+\DoxyCodeLine{00234\ \ \ \ \ \}}
+\DoxyCodeLine{00235\ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (LIRS\_list\_Q.size()\ >=\ capacity\ -\/\ LIR\_capacity)\ \{}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ Key\ last\_key\_in\_Q\ =\ LIRS\_list\_Q.back();}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ last\_it\ =\ LIRS\_map.find(last\_key\_in\_Q);}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_Q.pop\_back();}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (last\_it-\/>second.is\_in\_S)\ \{}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_it-\/>second.type\ =\ QueueType::HIR\_NO\_RESIDENT;}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_map.erase(last\_it);}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ result.has\_evicted\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ result.evicted\_key\ =\ last\_key\_in\_Q;}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ LIRS\_list\_S.push\_front(key);}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ LIRS\_list\_Q.push\_front(key);}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ LIRS\_map[key]\ =\ \{QueueType::HIR\_RESIDENT,\ LIRS\_list\_S.begin(),\ LIRS\_list\_Q.begin(),\ \textcolor{keyword}{true}\};}
+\DoxyCodeLine{00259\ \ \ \ \ \}}
+\DoxyCodeLine{00260\ \ \ \ \ }
+\DoxyCodeLine{00261\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00262\ \}}
+\DoxyCodeLine{00263\ }
+\DoxyCodeLine{00264\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00265\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classLIRS__Cache}{LIRS\_Cache<Key>::contains}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00266\ \{}
+\DoxyCodeLine{00267\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ LIRS\_map.find(key);}
+\DoxyCodeLine{00268\ \ \ \ \ }
+\DoxyCodeLine{00269\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ ==\ LIRS\_map.end())\ \{}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00271\ \ \ \ \ \}}
+\DoxyCodeLine{00272\ \ \ \ \ }
+\DoxyCodeLine{00273\ \ \ \ \ \textcolor{keywordflow}{if}\ (it-\/>second.type\ ==\ QueueType::LIR\ ||\ it-\/>second.type\ ==\ QueueType::HIR\_RESIDENT)\ \{}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00275\ \ \ \ \ \}}
+\DoxyCodeLine{00276\ \ \ \ \ }
+\DoxyCodeLine{00277\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00278\ \}}
+\DoxyCodeLine{00279\ }
+\DoxyCodeLine{00280\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00281\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classLIRS__Cache}{LIRS\_Cache<Key>::erase}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00282\ \{}
+\DoxyCodeLine{00283\ \ \ \ \ \textcolor{keyword}{auto}\ it\_map\ =\ LIRS\_map.find(key);}
+\DoxyCodeLine{00284\ \ \ \ \ }
+\DoxyCodeLine{00285\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\_map\ !=\ LIRS\_map.end())\ \{}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(it\_map-\/>second.type\ ==\ QueueType::LIR)\ \{}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_S.erase(it\_map-\/>second.it\_S);}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ count\_LIR-\/-\/;}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(it\_map-\/>second.type\ ==\ QueueType::HIR\_RESIDENT)\ \{}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_Q.erase(it\_map-\/>second.it\_Q);}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\_map-\/>second.is\_in\_S)\ \{}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_S.erase(it\_map-\/>second.it\_S);}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(it\_map-\/>second.type\ ==\ QueueType::HIR\_NO\_RESIDENT)\ \{}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ LIRS\_list\_S.erase(it\_map-\/>second.it\_S);}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ LIRS\_map.erase(it\_map);}
+\DoxyCodeLine{00302\ \ \ \ \ \}}
+\DoxyCodeLine{00303\ \}}
+\DoxyCodeLine{00304\ }
+\DoxyCodeLine{00305\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00306\ std::vector<Key>\ \mbox{\hyperlink{classLIRS__Cache}{LIRS\_Cache<Key>::get\_elements}}()}
+\DoxyCodeLine{00307\ \{}
+\DoxyCodeLine{00308\ \ \ \ \ std::vector<Key>\ result;}
+\DoxyCodeLine{00309\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ Key\&\ value\ :\ LIRS\_list\_S)\ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (LIRS\_map[value].type\ ==\ QueueType::LIR)\ \{\ }
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ result.push\_back(value);}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00313\ \ \ \ \ \}}
+\DoxyCodeLine{00314\ \ \ \ \ }
+\DoxyCodeLine{00315\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ Key\&\ value\ :\ LIRS\_list\_Q)\ \{}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ result.push\_back(value);}
+\DoxyCodeLine{00317\ \ \ \ \ \}}
+\DoxyCodeLine{00318\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00319\ \}}
+\DoxyCodeLine{00320\ }
+\DoxyCodeLine{00321\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00322\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classLIRS__Cache}{LIRS\_Cache<Key>::read\_cache}}()}
+\DoxyCodeLine{00323\ \{}
+\DoxyCodeLine{00324\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Физическое\ содержимое\ кэша:\(\backslash\)n"{}});}
+\DoxyCodeLine{00325\ \ \ \ \ }
+\DoxyCodeLine{00326\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}[VIP\ /\ LIR]:\ \ |\ \ "{}});}
+\DoxyCodeLine{00327\ \ \ \ \ \textcolor{keywordflow}{for}\ (Key\ value\ :\ LIRS\_list\_S)\ \{}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ LIRS\_map.find(value);}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ LIRS\_map.end()\ \&\&\ it-\/>second.type\ ==\ QueueType::LIR)\ \{}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ value,\ \textcolor{stringliteral}{"{}\ \ |\ \ "{}});}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00332\ \ \ \ \ \}}
+\DoxyCodeLine{00333\ \ \ \ \ }
+\DoxyCodeLine{00334\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}[Обычные\ /\ HIR]:\ \ |\ \ "{}});}
+\DoxyCodeLine{00335\ \ \ \ \ \textcolor{keywordflow}{for}\ (Key\ value\ :\ LIRS\_list\_Q)\ \{}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ value,\ \textcolor{stringliteral}{"{}\ \ |\ \ "{}});}
+\DoxyCodeLine{00337\ \ \ \ \ \}}
+\DoxyCodeLine{00338\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00339\ \ \ \ \ }
+\DoxyCodeLine{00340\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}[Призраки\ (Только\ история)]:\ \ |\ \ "{}});}
+\DoxyCodeLine{00341\ \ \ \ \ \textcolor{keywordflow}{for}\ (Key\ value\ :\ LIRS\_list\_S)\ \{}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ LIRS\_map.find(value);}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ LIRS\_map.end()\ \&\&\ it-\/>second.type\ ==\ QueueType::HIR\_NO\_RESIDENT)\ \{}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ value,\ \textcolor{stringliteral}{"{}\ \ |\ \ "{}});}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00346\ \ \ \ \ \}}
+\DoxyCodeLine{00347\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00348\ \}}
+
+\end{DoxyCode}

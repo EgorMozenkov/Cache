@@ -1,0 +1,205 @@
+\doxysection{2Q\+\_\+cache.\+hpp}
+\hypertarget{2Q__cache_8hpp_source}{}\label{2Q__cache_8hpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <list>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}I\_cache.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}Logger.hpp"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00019\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classTwoQ__Cache}{TwoQ\_Cache}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classICache}{ICache}}<Key>\ \{}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keyword}{using\ }IT\ =\ \textcolor{keyword}{typename}\ std::list<Key>::iterator;}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{enum\ class}\ QueueType\ \{}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ IN,}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ OUT,}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ VIP,}
+\DoxyCodeLine{00027\ \ \ \ \ \};}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{struct\ }ItemInfo\ \{}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ QueueType\ type;}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ IT\ list\_it;}
+\DoxyCodeLine{00032\ \ \ \ \ \};}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ std::unordered\_map<Key,\ ItemInfo>\ TwoQ\_map;}
+\DoxyCodeLine{00037\ \ \ \ \ std::list<Key>\ IN\_list,\ OUT\_list,\ VIP\_list;}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ size\_IN,\ size\_OUT,\ size\_VIP;}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ capacity;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ \ \ \ \ }
+\DoxyCodeLine{00049\ \ \ \ \ \mbox{\hyperlink{classTwoQ__Cache}{TwoQ\_Cache}}\ (\textcolor{keywordtype}{size\_t}\ N);\ }
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ }
+\DoxyCodeLine{00052\ \ \ \ \ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ request(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{bool}\ contains(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{void}\ erase(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00055\ \ \ \ \ std::vector<Key>\ get\_elements()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{void}\ read\_cache()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00057\ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00061\ \mbox{\hyperlink{classTwoQ__Cache_a1a7548a65678620b5abc07d0039ab58a}{TwoQ\_Cache<Key>::TwoQ\_Cache}}(\textcolor{keywordtype}{size\_t}\ N)}
+\DoxyCodeLine{00062\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordflow}{if}\ (N\ <=\ 3)\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Ошибка:\ Размер\ кэша\ 2Q\ должен\ быть\ больше\ 3."{}});}
+\DoxyCodeLine{00065\ \ \ \ \ \}}
+\DoxyCodeLine{00066\ \ \ \ \ size\_IN\ =\ N\ /\ 4;}
+\DoxyCodeLine{00067\ \ \ \ \ size\_VIP\ =\ N\ -\/\ size\_IN;}
+\DoxyCodeLine{00068\ \ \ \ \ size\_OUT\ =\ N\ /\ 2;}
+\DoxyCodeLine{00069\ \ \ \ \ capacity\ =\ N;}
+\DoxyCodeLine{00070\ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00073\ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ \mbox{\hyperlink{classTwoQ__Cache}{TwoQ\_Cache<Key>::request}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00074\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ TwoQ\_map.find(key);}
+\DoxyCodeLine{00076\ \ \ \ \ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ result\ =\ \{\textcolor{keyword}{false},\ \textcolor{keyword}{false},\ Key\{\}\};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00077\ \ \ \ \ }
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{comment}{//\ Элемента\ нет\ ни\ в\ одной\ из\ очередей}}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ ==\ TwoQ\_map.end())\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Проверяем\ переполнение\ IN}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (IN\_list.size()\ >=\ size\_IN)\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ Key\ value\_1\ =\ IN\_list.back();}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ IN\_list.pop\_back();}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Проверяем\ переполнение\ OUT}}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (OUT\_list.size()\ >=\ size\_OUT)\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Key\ value\_2\ =\ OUT\_list.back();}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}Вытеснение:\ Удаляем\ старейший\ ключ\ из\ OUT:\ "{}},\ value\_2,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ OUT\_list.pop\_back();}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TwoQ\_map.erase(value\_2);}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ result.has\_evicted\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ result.evicted\_key\ =\ value\_2;}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Переносим\ элемент\ из\ IN\ в\ OUT}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ OUT\_list.push\_front(value\_1);}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ TwoQ\_map[value\_1]\ =\ \{QueueType::OUT,\ OUT\_list.begin()\};}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Добавляем\ новый\ ключ\ в\ IN}}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ IN\_list.push\_front(key);}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ TwoQ\_map[key]\ =\ \{QueueType::IN,\ IN\_list.begin()\};}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}МИСС:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ добавлен\ в\ IN\(\backslash\)n"{}});}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00108\ \ \ \ \ \}}
+\DoxyCodeLine{00109\ \ \ \ \ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{comment}{//\ Ключ\ найден}}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keyword}{auto}\&\ node\ =\ it-\/>second;}
+\DoxyCodeLine{00112\ \ \ \ \ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordflow}{if}\ (node.type\ ==\ QueueType::VIP)\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ VIP\_list.splice(VIP\_list.begin(),\ VIP\_list,\ node.list\_it);}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}ХИТ:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ в\ VIP,\ переносим\ в\ начало\(\backslash\)n"{}});}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ result.hit\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00119\ \ \ \ \ \}}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (node.type\ ==\ QueueType::IN)\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}ХИТ:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ в\ IN,\ оставляем\ на\ месте\(\backslash\)n"{}});}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ result.hit\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00125\ \ \ \ \ \}}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (node.type\ ==\ QueueType::OUT)\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Проверяем\ переполнение\ VIP}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (VIP\_list.size()\ >=\ size\_VIP)\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ Key\ evicted\_vip\ =\ VIP\_list.back();}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}Вытеснение:\ VIP\ переполнен.\ Удаляем:\ "{}},\ evicted\_vip,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ TwoQ\_map.erase(evicted\_vip);}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ VIP\_list.pop\_back();}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ result.has\_evicted\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ result.evicted\_key\ =\ evicted\_vip;}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ OUT\_list.erase(node.list\_it);}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ VIP\_list.push\_front(key);}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ node.type\ =\ QueueType::VIP;}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ node.list\_it\ =\ VIP\_list.begin();}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}МИСС:\ Ключ\ "{}},\ key,\ \textcolor{stringliteral}{"{}\ повышен\ из\ OUT\ в\ VIP\(\backslash\)n"{}});}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00148\ \ \ \ \ \}}
+\DoxyCodeLine{00149\ \ \ \ \ }
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00151\ \}}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00154\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classTwoQ__Cache}{TwoQ\_Cache<Key>::contains}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00155\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ TwoQ\_map.find(key);}
+\DoxyCodeLine{00157\ \ \ \ \ }
+\DoxyCodeLine{00158\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ ==\ TwoQ\_map.end())\ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00160\ \ \ \ \ \}}
+\DoxyCodeLine{00161\ \ \ \ \ }
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordflow}{if}\ (it-\/>second.type\ ==\ QueueType::IN\ ||\ it-\/>second.type\ ==\ QueueType::VIP)\ \{}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00164\ \ \ \ \ \}}
+\DoxyCodeLine{00165\ \ \ \ \ }
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00167\ \}}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00170\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTwoQ__Cache}{TwoQ\_Cache<Key>::erase}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00171\ \{}
+\DoxyCodeLine{00172\ \ \ \ \ \textcolor{keyword}{auto}\ it\_map\ =\ TwoQ\_map.find(key);}
+\DoxyCodeLine{00173\ \ \ \ \ }
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\_map\ !=\ TwoQ\_map.end())\ \{}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(it\_map-\/>second.type\ ==\ QueueType::IN)\ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ IN\_list.erase(it\_map-\/>second.list\_it);}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(it\_map-\/>second.type\ ==\ QueueType::VIP)\ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ VIP\_list.erase(it\_map-\/>second.list\_it);}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(it\_map-\/>second.type\ ==\ QueueType::OUT)\ \{}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ OUT\_list.erase(it\_map-\/>second.list\_it);}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ TwoQ\_map.erase(it\_map);}
+\DoxyCodeLine{00187\ \ \ \ \ \}}
+\DoxyCodeLine{00188\ \}}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00191\ std::vector<Key>\ \mbox{\hyperlink{classTwoQ__Cache}{TwoQ\_Cache<Key>::get\_elements}}()}
+\DoxyCodeLine{00192\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ std::vector<Key>\ result;}
+\DoxyCodeLine{00194\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ value\ :\ VIP\_list)\ \{}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ result.push\_back(value);}
+\DoxyCodeLine{00196\ \ \ \ \ \}}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ value\ :\ IN\_list)\ \{}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ result.push\_back(value);}
+\DoxyCodeLine{00199\ \ \ \ \ \}}
+\DoxyCodeLine{00200\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00201\ \}}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00205\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTwoQ__Cache}{TwoQ\_Cache<Key>::read\_cache}}()}
+\DoxyCodeLine{00206\ \{}
+\DoxyCodeLine{00207\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Начало\ кэша\ |\ \ "{}});}
+\DoxyCodeLine{00208\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ value\ :\ VIP\_list)\ \{}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ value,\ \textcolor{stringliteral}{"{}\ |\ \ "{}});}
+\DoxyCodeLine{00210\ \ \ \ \ \}}
+\DoxyCodeLine{00211\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ value\ :\ IN\_list)\ \{}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ value,\ \textcolor{stringliteral}{"{}\ |\ \ "{}});}
+\DoxyCodeLine{00213\ \ \ \ \ \}}
+\DoxyCodeLine{00214\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Конец\ кэша\ |\(\backslash\)n"{}});}
+\DoxyCodeLine{00215\ \}}
+
+\end{DoxyCode}

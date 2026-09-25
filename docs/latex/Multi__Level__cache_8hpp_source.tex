@@ -1,0 +1,161 @@
+\doxysection{Multi\+\_\+\+Level\+\_\+cache.\+hpp}
+\hypertarget{Multi__Level__cache_8hpp_source}{}\label{Multi__Level__cache_8hpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}Logger.hpp"{}}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}I\_cache.hpp"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}File\_request.hpp"{}}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ "{}LRU\_cache.hpp"{}}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ "{}LFU\_cache.hpp"{}}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ "{}2Q\_cache.hpp"{}}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ "{}ARC\_cache.hpp"{}}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ "{}LIRS\_cache.hpp"{}}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00026\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00027\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classMulti__Level__Cache}{Multi\_Level\_Cache}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classICache}{ICache}}<Key>\ \{}
+\DoxyCodeLine{00028\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00029\ \ \ \ \ std::vector<std::unique\_ptr<ICache<Key>>>\ levels;\ \ \ \ \ \ \ }
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ capacity;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00043\ \ \ \ \ \mbox{\hyperlink{classMulti__Level__Cache}{Multi\_Level\_Cache}}(\mbox{\hyperlink{structConfig}{Config}}\&\ conf,\ \mbox{\hyperlink{structInputData}{InputData<Key>}}\&\ Data);}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ request(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{bool}\ contains(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{void}\ erase(\textcolor{keyword}{const}\ Key\&\ key)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00048\ \ \ \ \ std::vector<Key>\ get\_elements()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{void}\ read\_cache()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00050\ \};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00054\ \mbox{\hyperlink{classMulti__Level__Cache_ade74449cd6eda14bb5824a4e163d0bd3}{Multi\_Level\_Cache<Key>::Multi\_Level\_Cache}}(\mbox{\hyperlink{structConfig}{Config}}\&\ conf,\ \mbox{\hyperlink{structInputData}{InputData<Key>}}\&\ Data)}
+\DoxyCodeLine{00055\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ capacity\ =\ Data.\mbox{\hyperlink{structInputData_a69ad0af8b25a276dbd357e37fb8f69a1}{Cache\_size}};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ base\_capasity\_cache\ =\ capacity\ /\ conf.\mbox{\hyperlink{structConfig_a55b0689b9c46a8a62ab6796b814d57e1}{levels}};}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ capacity\_last\_level\ =\ capacity\ /\ conf.\mbox{\hyperlink{structConfig_a55b0689b9c46a8a62ab6796b814d57e1}{levels}}\ +\ capacity\ \%\ conf.\mbox{\hyperlink{structConfig_a55b0689b9c46a8a62ab6796b814d57e1}{levels}};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ conf.\mbox{\hyperlink{structConfig_a55b0689b9c46a8a62ab6796b814d57e1}{levels}};\ i++)\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ current\_size;}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(i\ ==\ conf.\mbox{\hyperlink{structConfig_a55b0689b9c46a8a62ab6796b814d57e1}{levels}}\ -\/\ 1)\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ current\_size\ =\ capacity\_last\_level;}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ current\_size\ =\ base\_capasity\_cache;}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(conf.\mbox{\hyperlink{structConfig_ae23f9bc16cfa9a59082995817e0c5f34}{algorithms}}[i]\ ==\ \textcolor{stringliteral}{"{}LRU"{}})\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ levels.push\_back(std::make\_unique<\mbox{\hyperlink{classLRU__Cache}{LRU\_Cache<Key>}}>(current\_size));}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(conf.\mbox{\hyperlink{structConfig_ae23f9bc16cfa9a59082995817e0c5f34}{algorithms}}[i]\ ==\ \textcolor{stringliteral}{"{}LFU"{}})\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ levels.push\_back(std::make\_unique<\mbox{\hyperlink{classLFU__Cache}{LFU\_Cache<Key>}}>(current\_size));}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(conf.\mbox{\hyperlink{structConfig_ae23f9bc16cfa9a59082995817e0c5f34}{algorithms}}[i]\ ==\ \textcolor{stringliteral}{"{}2Q"{}})\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ levels.push\_back(std::make\_unique<\mbox{\hyperlink{classTwoQ__Cache}{TwoQ\_Cache<Key>}}>(current\_size));}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(conf.\mbox{\hyperlink{structConfig_ae23f9bc16cfa9a59082995817e0c5f34}{algorithms}}[i]\ ==\ \textcolor{stringliteral}{"{}ARC"{}})\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ levels.push\_back(std::make\_unique<\mbox{\hyperlink{classARC__Cache}{ARC\_Cache<Key>}}>(current\_size));}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(conf.\mbox{\hyperlink{structConfig_ae23f9bc16cfa9a59082995817e0c5f34}{algorithms}}[i]\ ==\ \textcolor{stringliteral}{"{}LIRS"{}})\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ levels.push\_back(std::make\_unique<\mbox{\hyperlink{classLIRS__Cache}{LIRS\_Cache<Key>}}>(current\_size));}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Неизвестный\ алгоритм:\ "{}}\ +\ conf.\mbox{\hyperlink{structConfig_ae23f9bc16cfa9a59082995817e0c5f34}{algorithms}}[i]);}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00089\ \ \ \ \ \}}
+\DoxyCodeLine{00090\ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00093\ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ \mbox{\hyperlink{classMulti__Level__Cache}{Multi\_Level\_Cache<Key>::request}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00094\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ result\ =\ \{\textcolor{keyword}{false},\ \textcolor{keyword}{false},\ Key\{\}\};}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordtype}{int}\ hit\_level\ =\ -\/1;}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{comment}{//\ Ищем\ ключ\ по\ всем\ уровням\ (от\ L0\ до\ L\_N)}}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ levels.size();\ i++)\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(levels[i]-\/>contains(key))\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ hit\_level\ =\ i;}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00104\ \ \ \ \ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{comment}{//\ Если\ ключ\ найден\ на\ нижнем\ уровне,\ убираем\ его\ оттуда\ для\ поднятия\ наверх}}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordflow}{if}\ (hit\_level\ >\ 0)\ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ levels[hit\_level]-\/>erase(key);}
+\DoxyCodeLine{00109\ \ \ \ \ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{comment}{//\ Запрашиваем\ ключ\ у\ первого\ уровня\ (L0)}}
+\DoxyCodeLine{00112\ \ \ \ \ result\ =\ levels[0]-\/>request(key);}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{comment}{//\ Если\ L0\ переполнен,\ проталкиваем\ вытесненный\ элемент\ вниз}}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keywordflow}{if}(result.has\_evicted)\ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ Key\ value\ =\ result.evicted\_key;}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t}\ i\ =\ 1;\ i\ <\ levels.size();\ i++)\ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structCacheResult}{CacheResult<Key>}}\ result\_value\ =\ levels[i]-\/>request(value);}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(result\_value.has\_evicted)\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ value\ =\ result\_value.evicted\_key;\ }
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};\ }
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \ \ \}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{comment}{//\ Корректируем\ итоговый\ статус\ хита\ для\ внешней\ статистики}}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordflow}{if}\ (hit\_level\ !=\ -\/1)\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ result.hit\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00132\ \ \ \ \ \}}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00135\ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00138\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classMulti__Level__Cache}{Multi\_Level\_Cache<Key>::contains}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00139\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ levels.size();\ i++)\ \{}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(levels[i]-\/>contains(key))\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00142\ \ \ \ \ \}}
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00144\ \}}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00147\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classMulti__Level__Cache}{Multi\_Level\_Cache<Key>::erase}}(\textcolor{keyword}{const}\ Key\&\ key)}
+\DoxyCodeLine{00148\ \{}
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ levels.size();\ i++)\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ levels[i]-\/>erase(key);}
+\DoxyCodeLine{00151\ \ \ \ \ \}}
+\DoxyCodeLine{00152\ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00155\ std::vector<Key>\ \mbox{\hyperlink{classMulti__Level__Cache}{Multi\_Level\_Cache<Key>::get\_elements}}()}
+\DoxyCodeLine{00156\ \{}
+\DoxyCodeLine{00157\ \ \ \ \ std::vector<Key>\ all\_elements;}
+\DoxyCodeLine{00158\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ levels.size();\ i++)\ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ std::vector<Key>\ level\_elements\ =\ levels[i]-\/>get\_elements();}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ all\_elements.insert(all\_elements.end(),\ level\_elements.begin(),\ level\_elements.end());}
+\DoxyCodeLine{00161\ \ \ \ \ \}}
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordflow}{return}\ all\_elements;}
+\DoxyCodeLine{00163\ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00166\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classMulti__Level__Cache}{Multi\_Level\_Cache<Key>::read\_cache}}()}
+\DoxyCodeLine{00167\ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Начало\ кэша\ |\ \ "{}});}
+\DoxyCodeLine{00169\ \ \ \ \ std::vector<Key>\ all\_elements\ =\ get\_elements();}
+\DoxyCodeLine{00170\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ val\ :\ all\_elements)\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ val,\ \textcolor{stringliteral}{"{}\ |\ \ "{}});}
+\DoxyCodeLine{00172\ \ \ \ \ \}}
+\DoxyCodeLine{00173\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Конец\ кэша\ |\(\backslash\)n"{}});}
+\DoxyCodeLine{00174\ \}}
+
+\end{DoxyCode}

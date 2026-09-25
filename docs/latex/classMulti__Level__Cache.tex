@@ -1,0 +1,132 @@
+\doxysection{Multi\+\_\+\+Level\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classMulti__Level__Cache}{}\label{classMulti__Level__Cache}\index{Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}}
+
+
+Реализация многоуровневой системы кэшей.  
+
+
+
+
+{\ttfamily \#include $<$Multi\+\_\+\+Level\+\_\+cache.\+hpp$>$}
+
+
+
+Inheritance diagram for Multi\+\_\+\+Level\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>}\+:
+% FIG 0
+
+
+Collaboration diagram for Multi\+\_\+\+Level\+\_\+\+Cache\texorpdfstring{$<$}{<} Key \texorpdfstring{$>$}{>}\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classMulti__Level__Cache_ade74449cd6eda14bb5824a4e163d0bd3}{Multi\+\_\+\+Level\+\_\+\+Cache}} (\mbox{\hyperlink{structConfig}{Config}} \&conf, \mbox{\hyperlink{structInputData}{Input\+Data}}$<$ Key $>$ \&Data)
+\begin{DoxyCompactList}\small\item\em Динамически собирает кэши. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structCacheResult}{Cache\+Result}}$<$ Key $>$ \mbox{\hyperlink{classMulti__Level__Cache_a94069918ce16d093d0ca429ce662b768}{request}} (const Key \&key) override
+\item 
+bool \mbox{\hyperlink{classMulti__Level__Cache_a2a8fca470eda8575def9459386d14c45}{contains}} (const Key \&key) override
+\item 
+void \mbox{\hyperlink{classMulti__Level__Cache_a116ac056b519c617ad99381f7ec795a5}{erase}} (const Key \&key) override
+\item 
+std\+::vector$<$ Key $>$ \mbox{\hyperlink{classMulti__Level__Cache_ac947cfb58b7f13b3f9df351ac959ca0e}{get\+\_\+elements}} () override
+\item 
+void \mbox{\hyperlink{classMulti__Level__Cache_a8ad2d6a58930c5131900bfc385571e59}{read\+\_\+cache}} () override
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Key$>$\newline
+class Multi\+\_\+\+Level\+\_\+\+Cache$<$ Key $>$}
+Реализация многоуровневой системы кэшей. 
+
+Создает иерархию уровней (L0, L1, L2...) на основе входящего файла. Управляет данными между кэшами\+: при попадании на нижнем уровне элемент "{}поднимается"{} на самый быстрый уровень (L0), а вытесненные из L0 элементы "{}проваливаются"{} на уровни ниже, пока не покинут память окончательно. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classMulti__Level__Cache_ade74449cd6eda14bb5824a4e163d0bd3}\label{classMulti__Level__Cache_ade74449cd6eda14bb5824a4e163d0bd3} 
+\index{Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}!Multi\_Level\_Cache@{Multi\_Level\_Cache}}
+\index{Multi\_Level\_Cache@{Multi\_Level\_Cache}!Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{Multi\_Level\_Cache()}{Multi\_Level\_Cache()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+\mbox{\hyperlink{classMulti__Level__Cache}{Multi\+\_\+\+Level\+\_\+\+Cache}}$<$ Key $>$\mbox{\hyperlink{classMulti__Level__Cache}{\+::\+Multi\+\_\+\+Level\+\_\+\+Cache}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structConfig}{Config}} \&}]{conf,  }\item[{\mbox{\hyperlink{structInputData}{Input\+Data}}$<$ Key $>$ \&}]{Data }\end{DoxyParamCaption})}
+
+
+
+Динамически собирает кэши. 
+
+Равномерно распределяет общую доступную память (Cache\+\_\+size) между всеми заявленными уровнями. Последний уровень забирает возможный остаток от деления.
+
+
+\begin{DoxyParams}{Parameters}
+{\em conf} & Настройки архитектуры (количество уровней и строковые имена алгоритмов). \\
+\hline
+{\em Data} & Входные данные, содержащие суммарный лимит физической памяти. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em std\+::invalid\+\_\+argument} & Если запрошен неизвестный алгоритм кэширования. \\
+\hline
+\end{DoxyExceptions}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classMulti__Level__Cache_a2a8fca470eda8575def9459386d14c45}\label{classMulti__Level__Cache_a2a8fca470eda8575def9459386d14c45} 
+\index{Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}!contains@{contains}}
+\index{contains@{contains}!Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+bool \mbox{\hyperlink{classMulti__Level__Cache}{Multi\+\_\+\+Level\+\_\+\+Cache}}$<$ Key $>$\+::contains (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classMulti__Level__Cache_a116ac056b519c617ad99381f7ec795a5}\label{classMulti__Level__Cache_a116ac056b519c617ad99381f7ec795a5} 
+\index{Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}!erase@{erase}}
+\index{erase@{erase}!Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{erase()}{erase()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+void \mbox{\hyperlink{classMulti__Level__Cache}{Multi\+\_\+\+Level\+\_\+\+Cache}}$<$ Key $>$\+::erase (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classMulti__Level__Cache_ac947cfb58b7f13b3f9df351ac959ca0e}\label{classMulti__Level__Cache_ac947cfb58b7f13b3f9df351ac959ca0e} 
+\index{Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}!get\_elements@{get\_elements}}
+\index{get\_elements@{get\_elements}!Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{get\_elements()}{get\_elements()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+std\+::vector$<$ Key $>$ \mbox{\hyperlink{classMulti__Level__Cache}{Multi\+\_\+\+Level\+\_\+\+Cache}}$<$ Key $>$\+::get\+\_\+elements (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classMulti__Level__Cache_a8ad2d6a58930c5131900bfc385571e59}\label{classMulti__Level__Cache_a8ad2d6a58930c5131900bfc385571e59} 
+\index{Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}!read\_cache@{read\_cache}}
+\index{read\_cache@{read\_cache}!Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{read\_cache()}{read\_cache()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+void \mbox{\hyperlink{classMulti__Level__Cache}{Multi\+\_\+\+Level\+\_\+\+Cache}}$<$ Key $>$\+::read\+\_\+cache (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+\Hypertarget{classMulti__Level__Cache_a94069918ce16d093d0ca429ce662b768}\label{classMulti__Level__Cache_a94069918ce16d093d0ca429ce662b768} 
+\index{Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}!request@{request}}
+\index{request@{request}!Multi\_Level\_Cache$<$ Key $>$@{Multi\_Level\_Cache$<$ Key $>$}}
+\doxysubsubsection{\texorpdfstring{request()}{request()}}
+{\footnotesize\ttfamily template$<$typename Key $>$ \\
+\mbox{\hyperlink{structCacheResult}{Cache\+Result}}$<$ Key $>$ \mbox{\hyperlink{classMulti__Level__Cache}{Multi\+\_\+\+Level\+\_\+\+Cache}}$<$ Key $>$\+::request (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classICache}{ICache$<$ Key $>$}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Multi\+\_\+\+Level\+\_\+cache.\+hpp\end{DoxyCompactItemize}

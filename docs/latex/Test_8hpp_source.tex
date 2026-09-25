@@ -1,0 +1,54 @@
+\doxysection{Test.\+hpp}
+\hypertarget{Test_8hpp_source}{}\label{Test_8hpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}Logger.hpp"{}}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ CacheType,\ \textcolor{keyword}{typename}\ Key>}
+\DoxyCodeLine{00022\ \textcolor{keywordtype}{void}\ TEST\ (\textcolor{keywordtype}{size\_t}\ N,\ \textcolor{keyword}{const}\ std::vector<Key>\&\ keys)}
+\DoxyCodeLine{00023\ \{}
+\DoxyCodeLine{00024\ \ \ \ \ CacheType\ cache(N);}
+\DoxyCodeLine{00025\ \ \ \ \ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ HITS\ =\ 0;}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ total\_request\ =\ 0;}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Создан\ тип\ кэша\ размером\ "{}},\ N,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00030\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}-\/-\/-\/\ Исходное\ состояние\ кэша\ -\/-\/-\/\(\backslash\)n"{}});}
+\DoxyCodeLine{00031\ \ \ \ \ cache.read\_cache();}
+\DoxyCodeLine{00032\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4e49113de847d4ce568b7f0d5647a715}{Log::DEBUG}},\ \textcolor{stringliteral}{"{}Приходят\ новые\ ключи!\(\backslash\)n"{}});}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{const}\ Key\&\ key\ :\ keys)\ \{}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}Запрошен\ ключ:\ "{}},\ key,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(cache.request(key).hit)\ \{}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}-\/>\ ХИТ!\(\backslash\)n"{}});}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ HITS++;}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}-\/>\ МИСС!\(\backslash\)n"{}});}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ cache.read\_cache();}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ total\_request++;}
+\DoxyCodeLine{00045\ \ \ \ \ \}}
+\DoxyCodeLine{00046\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea8ddc7ebe42544ebab9b3d6cf49ab33d8}{Log::INFO}},\ \textcolor{stringliteral}{"{}-\/-\/-\/\ Cостояние\ кэша\ после\ теста\ -\/-\/-\/\(\backslash\)n"{}});}
+\DoxyCodeLine{00047\ \ \ \ \ cache.read\_cache();}
+\DoxyCodeLine{00048\ \ \ \ \ \mbox{\hyperlink{namespaceLog_aeddaa2e8facc1def09231f58a724dc99}{Log::trace}}(\mbox{\hyperlink{namespaceLog_a3718f3e276c3d3e23b58a3b8236d196ea4cd0be82d98ca2a542adc75f2c826e5b}{Log::ERROR}},\ \textcolor{stringliteral}{"{}Количество\ запросов:\ "{}},\ total\_request,\ \textcolor{stringliteral}{"{},\ Количество\ хитов:\ "{}},\ HITS,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00049\ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00053\ \textcolor{keywordtype}{void}\ test\_LRU\ ();}
+\DoxyCodeLine{00054\ \textcolor{keywordtype}{void}\ test\_LFU\ ();}
+\DoxyCodeLine{00055\ \textcolor{keywordtype}{void}\ test\_TwoQ\ ();}
+\DoxyCodeLine{00056\ \textcolor{keywordtype}{void}\ test\_ARC\ ();}
+\DoxyCodeLine{00057\ \textcolor{keywordtype}{void}\ test\_LIRS\ ();\ \ }
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00062\ \textcolor{keywordtype}{void}\ string\_test\_LRU\ ();}
+\DoxyCodeLine{00063\ \textcolor{keywordtype}{void}\ string\_test\_LFU\ ();}
+\DoxyCodeLine{00064\ \textcolor{keywordtype}{void}\ string\_test\_TwoQ\ ();}
+\DoxyCodeLine{00065\ \textcolor{keywordtype}{void}\ string\_test\_ARC\ ();}
+\DoxyCodeLine{00066\ \textcolor{keywordtype}{void}\ string\_test\_LIRS\ ();}
+\DoxyCodeLine{00067\ }
+
+\end{DoxyCode}
